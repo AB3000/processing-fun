@@ -3,12 +3,11 @@ int cometY;
 float tailLength = 100; // Length of the comet's tail
 PVector[] tail; // Array to store tail positions
 ArrayList<PVector[]> tails; // Array to store tail positions
-
-
-//float xDirection;
-//float yDirection;
+ArrayList<Float[]> directions; //array to store comet directions
 
 int movAmount;
+
+int numComets = 1;
 
 
 void setup() {
@@ -22,12 +21,15 @@ void setup() {
   //}
   
   tails = new ArrayList<>();
-  for(int i = 0; i < 10; i++){
+  directions = new ArrayList<>();
+  
+  for(int i = 0; i < numComets; i++){
     tails.add(new PVector[int(tailLength)]);
     float cometX = random(width);
     float cometY = random(height);
     for(int j = 0; j < tails.get(i).length; j++){
       tails.get(i)[j] = new PVector(cometX, cometY);
+      directions.add(new Float[]{0.5f, 0.5f});
     }
   }
  
@@ -47,7 +49,7 @@ void draw() {
   
   for(int i = 0; i < tails.size(); i++){
     tails.get(i)[0] = new PVector(tails.get(i)[0].x, tails.get(i)[0].y);
-    drawComet(color(153, 51, 0), 40, 40, 0.5, 0.5, tails.get(i));
+    drawComet(color(153, 51, 0), 40, 40, i, tails.get(i));
   }
   
   //for(int i = 0; i < tails.size(); i++){
@@ -57,17 +59,20 @@ void draw() {
 }
 
 
-void drawComet(color c, int cometSizeX, int cometSizeY, float xDirection, float yDirection, PVector[] tail){
-  
+void drawComet(color c, int cometSizeX, int cometSizeY, int idx, PVector[] tail){
   if (tail[0].x > width-cometSizeX || tail[0].x < cometSizeX) {
-    xDirection *= -1.25;
+    directions.get(idx)[0] *= -1.25;
+    //print("X DIRECTION IS", xDirection);
+    //print("TAIL 0 X IS ", tail[0].x);
   }
   if (tail[0].y > height-cometSizeY || tail[0].y < cometSizeY) {
-    yDirection *= -1.25;
+    directions.get(idx)[1] *= -1;
+    print("Y DIRECTION IS", directions.get(idx)[1]);
+    print("TAIL 0 X IS ", tail[0].y);
   }
   
-  tail[0].x += movAmount * xDirection;
-  tail[0].y += movAmount * yDirection;
+  tail[0].x += movAmount * directions.get(idx)[0];
+  tail[0].y += movAmount * directions.get(idx)[1];
   
    // Draw the comet's tail
   int alpha = 100;
