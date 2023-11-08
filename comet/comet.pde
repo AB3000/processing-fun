@@ -4,18 +4,20 @@ float tailLength = 100; // Length of the comet's tail
 PVector[] tail; // Array to store tail positions
 ArrayList<PVector[]> tails; // Array to store tail positions
 ArrayList<Float[]> directions; //array to store comet directions
+color[] colors; //array to store colors
 
 int movAmount = 5;
-int numComets = 5;
+int numComets = 10;
 
 int cometSizeX = 40;
 int cometSizeY = 40;
 
 void setup() {
-  size(800, 600);
+  size(450, 800);
   
   tails = new ArrayList<>();
   directions = new ArrayList<>();
+  colors = new color[numComets];
   
   for(int i = 0; i < numComets; i++){
     tails.add(new PVector[int(tailLength)]);
@@ -24,13 +26,10 @@ void setup() {
     for(int j = 0; j < tails.get(i).length; j++){
       tails.get(i)[j] = new PVector(cometX, cometY);
       directions.add(new Float[]{0.5f, 0.5f});
+      colors[i] = color(random(255), random(255), random(255));
     }
   }
- 
-  //xDirection = 0.5; 
-  //yDirection = 0.5;
   
-  movAmount = 5;
   frameRate(30);
 }
 
@@ -43,7 +42,7 @@ void draw() {
   
   for(int i = 0; i < tails.size(); i++){
     tails.get(i)[0] = new PVector(tails.get(i)[0].x, tails.get(i)[0].y);
-    drawComet(color(153, 51, 0), 40, 40, i, tails.get(i));
+    drawComet(colors[i], 40, 40, i, tails.get(i));
   }
   
 }
