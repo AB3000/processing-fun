@@ -26,7 +26,7 @@ void setup() {
     for(int j = 0; j < tails.get(i).length; j++){
       tails.get(i)[j] = new PVector(cometX, cometY);
       directions.add(new Float[]{0.5f, 0.5f});
-      colors[i] = color(random(255), random(255), random(255));
+      colors[i] = color(random(50, 255), random(50, 255), random(50, 255));
     }
   }
   
@@ -37,9 +37,7 @@ void draw() {
   background(0); // Set background color to black
   noStroke();
 
-  // Update the first position of the tail with the current comet position
-  //tail[0] = new PVector(cometX, cometY);
-  
+  // Update the first position of the tail with the current comet position 
   for(int i = 0; i < tails.size(); i++){
     tails.get(i)[0] = new PVector(tails.get(i)[0].x, tails.get(i)[0].y);
     drawComet(colors[i], 40, 40, i, tails.get(i));
@@ -59,7 +57,7 @@ void drawComet(color c, int cometSizeX, int cometSizeY, int idx, PVector[] tail)
   tail[0].x += movAmount * directions.get(idx)[0];
   tail[0].y += movAmount * directions.get(idx)[1];
   
-   // Draw the comet's tail
+  // Draw the comet's tail
   int alpha = 100;
   
   // Shift the tail positions
