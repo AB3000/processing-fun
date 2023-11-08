@@ -5,28 +5,22 @@ PVector[] tail; // Array to store tail positions
 ArrayList<PVector[]> tails; // Array to store tail positions
 ArrayList<Float[]> directions; //array to store comet directions
 
-int movAmount;
+int movAmount = 5;
+int numComets = 5;
 
-int numComets = 1;
-
+int cometSizeX = 40;
+int cometSizeY = 40;
 
 void setup() {
   size(800, 600);
-  cometX = width / 2;
-  cometY = height / 2;
-  
-  //tail = new PVector[int(tailLength)];
-  //for (int i = 0; i < tail.length; i++) {
-  //  tail[i] = new PVector(cometX, cometY);
-  //}
   
   tails = new ArrayList<>();
   directions = new ArrayList<>();
   
   for(int i = 0; i < numComets; i++){
     tails.add(new PVector[int(tailLength)]);
-    float cometX = random(width);
-    float cometY = random(height);
+    float cometX = random(cometSizeX, width-cometSizeX);
+    float cometY = random(cometSizeY, height-cometSizeY);
     for(int j = 0; j < tails.get(i).length; j++){
       tails.get(i)[j] = new PVector(cometX, cometY);
       directions.add(new Float[]{0.5f, 0.5f});
@@ -52,23 +46,15 @@ void draw() {
     drawComet(color(153, 51, 0), 40, 40, i, tails.get(i));
   }
   
-  //for(int i = 0; i < tails.size(); i++){
-  //  drawComet(color(153, 51, 0), 40, 40, tails.get(i)[0].x, tails.get(i)[0].y, tails.get(i));
-  //}
-  
 }
 
 
 void drawComet(color c, int cometSizeX, int cometSizeY, int idx, PVector[] tail){
   if (tail[0].x > width-cometSizeX || tail[0].x < cometSizeX) {
     directions.get(idx)[0] *= -1.25;
-    //print("X DIRECTION IS", xDirection);
-    //print("TAIL 0 X IS ", tail[0].x);
   }
   if (tail[0].y > height-cometSizeY || tail[0].y < cometSizeY) {
-    directions.get(idx)[1] *= -1;
-    print("Y DIRECTION IS", directions.get(idx)[1]);
-    print("TAIL 0 X IS ", tail[0].y);
+    directions.get(idx)[1] *= -1.25;
   }
   
   tail[0].x += movAmount * directions.get(idx)[0];
