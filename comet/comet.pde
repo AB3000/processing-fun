@@ -6,6 +6,8 @@ ArrayList<PVector[]> tails; // Array to store tail positions
 ArrayList<Float[]> directions; //array to store comet directions
 color[] colors; //array to store colors
 
+
+
 int movAmount = 5;
 int numComets = 10;
 
@@ -26,7 +28,7 @@ void setup() {
     for(int j = 0; j < tails.get(i).length; j++){
       tails.get(i)[j] = new PVector(cometX, cometY);
       directions.add(new Float[]{0.5f, 0.5f});
-      colors[i] = color(random(50, 255), random(50, 255), random(50, 255));
+      colors[i] = color(random(25, 255), random(25, 255), random(25, 255));
     }
   }
   
