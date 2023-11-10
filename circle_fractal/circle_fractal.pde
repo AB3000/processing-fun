@@ -1,62 +1,111 @@
 color c = color(random(255), random(255), random(255));
 ArrayList<Float[]> ellipseData = new ArrayList<>();
-ArrayList<Integer[]> colors = new ArrayList<>();
+ArrayList<Integer> colors = new ArrayList<>();
 int ellipseIndex = 0;
 int framesPerEllipse = 1; // Adjust the frames per ellipse as needed
-int moveSize = 5;
+int circleAmount = 5;
+
+float centerX = width/2;
+float centerY = height/2;
 
 void setup() {
   size(450, 800);
-  noStroke();
-  
   background(0);
+  noStroke();
 
-  float centerX = width / 2;
-  float centerY = height / 2;
-  float initialRadius = 70;
+  // center position of the screen
+  centerX = width/2;
+  centerY = height/2;
   
-  //stroke(10);
-  // This code executes ever 2 frames.
-  for(int i = 0 ; i < 6; i++){
-    //c = color(random(255), random(255), random(255));
-    drawCircles(centerX, centerY, initialRadius, 10, 45 * i, 255, c);
+  // generate random colors as a gradient-start and gradient-end
+  color startColor = color(random(100, 255), random(100, 255), random(100, 255));
+  color endColor = color(random(100, 255), random(100, 255), random(100, 255));
+  
+  // generates a gradient of colors to the array passed in, in-place
+  //colors.add(startColor);
+  populateColors(circleAmount, colors, startColor, endColor);
+  //colors.add(endColor);
+  
+  for(int i = 0; i < colors.size(); i++){
+    println(colors.get(i));
+    fill(colors.get(i));
+    circle(20 + i*12, 200, 10);
   }
   
-  frameRate(60);
+  // draw preset "sunset" colored fractal
+  //drawCircles(6, 200, 100);
+  
+  
+  fill(startColor, 100);
+  translate(centerX, centerY);
+  drawFractal(circleAmount, PI*2, 100, 0, 0);
+  drawFractal(circleAmount, PI*2, -100, 0, 0);
+  
+  //drawFractal(5, PI*2, -200, 0, 0);
 }
 
 void draw() {  
-  // Draw one ellipse at a time with a delay
-  if (ellipseIndex < ellipseData.size() && frameCount % framesPerEllipse == 0) {
-    Float[] currentEllipse = ellipseData.get(ellipseIndex);
-    fill(colors.get(ellipseIndex)[0],  colors.get(ellipseIndex)[1]);
-    ellipse(currentEllipse[0], currentEllipse[1], currentEllipse[2], currentEllipse[2]);
-    ellipseIndex++;
-  }
-  
-  //if(ellipseIndex == ellipseData.size()){
-  //  for(int i = 0; i < ellipseData.size(); i++){
-  //    Float[] currentEllipse = ellipseData.get(i);
-  //    currentEllipse[2] /= 1.25;
-  //    ellipse(currentEllipse[0] + moveSize, currentEllipse[1] + moveSize, currentEllipse[2], currentEllipse[2]);
-  //  }
-  //}
-  
-  //moveSize-=5;
  
 }
 
-void drawCircles(float x, float y, float radius, int depth, float angle, int alpha, color c) {
-  if (depth == 0){
+
+ void populateColors(int numColors, 
+ ArrayList<Integer> colors, 
+ color startColor, 
+ color endColor){
+  
+   // stop the recursive generation when max colors have been reached
+   if(numColors == 0){
+     return;
+   }
+   
+   // generate a new color that takes an "average" / halfway color of the two colors passed in 
+   color generatedLerpColor = lerpColor(startColor, endColor, 0.5);
+   colors.add(generatedLerpColor);
+   
+   populateColors(numColors - 1, colors, startColor, generatedLerpColor);
+   populateColors(numColors - 1, colors, generatedLerpColor, endColor);
+}
+
+void drawInnerCircles(int depth, float angle, float radius, boolean negativeAngle, int reached){
+  if(depth == 0){
     return;
   }
   
-  //ellipse(x, y, radius, radius);
-  ellipseData.add(new Float[]{x, y, radius});
-  colors.add(new Integer[]{c, alpha});
+  //if (reached != 0){
+    if(negativeAngle){
+      circle((radius+depth) * cos(-angle), (radius-depth) * sin(-angle), radius);
+    } else{
+      circle((radius-depth) * cos(angle), (radius+depth) * sin(angle), radius);
+    }
+  //}
   
-  float nextAngle = angle + 50;
-  float nextRadius = radius * 0.75;
-  drawCircles(x + radius * cos(angle), y + radius * sin(angle), nextRadius, depth-1, nextAngle, alpha - 20, c + 30);
+  drawInnerCircles(depth - 1, angle, radius/2, negativeAngle, reached+1);
+}
+
+void drawFractal(int depth, float angle, int radius, int colorIndex, int reached){
+  
+  if(depth == 0){
+    return;
+  }
+  
+  fill(colors.get(colorIndex), 100);
+  
+  if (reached > 1){
+    print("COLOR IS ", colors.get(colorIndex));
+    fill(colors.get(colorIndex + 1), 120);
+    drawInnerCircles(5, angle, radius, true, 0);
+    //circle(radius/2 * cos(angle), radius/2 *sin(angle), radius);
+    
+    
+    //fill(colors.get(colors.size() - 2 - colorIndex), 50);
+    fill(colors.get(colors.size() - 2 - colorIndex), 120);
+    drawInnerCircles(5, angle, radius, false, 0);
+    //circle(radius/2 * cos(-angle), radius/2 *sin(-angle), radius);
+  }
+  
+
+  drawFractal(depth-1, angle/2, radius, colorIndex + 1, reached+1);
+  //drawFractal(depth-1, -angle/2, radius, recurseAmt + 1);
   
 }
