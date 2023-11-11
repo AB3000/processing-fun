@@ -1,12 +1,12 @@
 ArrayList<Integer> colors = new ArrayList<>();
 
 //DEBUGGING: UNCOMMENT TO CHECK IF ALL COLORS USED
-ArrayList<Boolean> colorsUsed = new ArrayList<>();
-int debugIter = 0; 
+//ArrayList<Boolean> colorsUsed = new ArrayList<>();
+//int debugIter = 0; 
 
 // number of outer circles to draw
 // excluding the first and last one
-int circleAmount = 0;
+int circleAmount = 1;
 
 // number of generated circles to show in the fractal
 // -1 means all circles 
@@ -41,16 +41,9 @@ float radius = 130;
 // larger = more spaced out
 float layerSpacing = 2;
 
-HashMap<String, Integer> variables = new HashMap<String, Integer>() {{
-  put("circleAmount", 0);
-  put("circleShowAmount", 1);
-  put("innerDepth", 2);
-  put("moveAmount", 3);
-  put("radius", 4);
-  put("layerSpacing", 5);
-}};
-
-
+//parameters of interest corresponding to key that will be 
+// changed on each frame & highlighted through the animation
+int[] parametersOfInterest = {0, 1, 2};
 
 void setup() {
   size(450, 800);
@@ -110,10 +103,24 @@ void draw() {
 
 
 void displayParameters(){
+  // display parameters 
   textSize(17);
   fill(0, 408, 612);
-  text("Circle Amount: " + circleAmount, centerX - width/3, topY - height/10); 
-  text("Inner Depth: " + innerDepth, centerX - width/3, topY - height/8); 
+  
+  textAlign(LEFT);
+  text("Circle Amount: " + circleAmount*2, centerX - width/2.5, topY - height/10); 
+  text("Circle Show Amount: " + circleShowAmount, centerX - width/2.5, 1.5*(topY - height/10)); 
+  text("Inner Depth: " + innerDepth, centerX - width/2.5, 2*(topY - height/10)); 
+  
+  textAlign(RIGHT);
+  text("Move Amount: " + moveAmount, centerX + width/2.5, topY - height/10); 
+  text("Outer Radius: " + radius, centerX + width/2.5, 1.5*(topY - height/10)); 
+  text("Layer Spacing: " + layerSpacing, centerX + width/2.5, 2*(topY - height/10)); 
+  
+  textSize(20);
+  textAlign(RIGHT);
+  text("Angle: ", centerX, bottomY + height/10); 
+  text(fractalAngle, centerX + width/10, bottomY + height/10); 
   
 }
 
@@ -172,6 +179,7 @@ void displayParameters(){
   //    colorsUsed.add(false);
   //  }
   //}
+  //println(colorsUsed);
   
  }
 
