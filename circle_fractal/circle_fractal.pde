@@ -1,31 +1,45 @@
-ArrayList<Float[]> ellipseData = new ArrayList<>();
 ArrayList<Integer> colors = new ArrayList<>();
-//ArrayList<Boolean> colorsUsed;
 
-int ellipseIndex = 0;
-int framesPerEllipse = 1; // Adjust the frames per ellipse as needed
+//DEBUGGING: UNCOMMENT TO CHECK IF ALL COLORS USED
+//ArrayList<Boolean> colorsUsed = new ArrayList<>();
+//int debugIter = 0; 
+
+// number of outer circles to draw
+// excluding the first and last one
 int circleAmount = 5;
+
+// number of inner circle layers to draw
+int innerDepth = 8;
 
 // center of the canvas
 float centerX;
 float centerY;
 
-// places where small color palette lines are drawn 
+// Values on y-axis where small color palette lines are drawn 
 float topY; 
 float bottomY; 
 
-// amount that color palette lines move along the y-axis per frame
-float moveAmount;
+// amount that fractal rotates from the center per frame
+float moveAmount = 0.01;
 
 // start and end colors of fractal gradient
 color startColor;
 color endColor;
 
-float firstFractalAngle = PI/2;
-float secondFractalAngle = PI/2;
-float initialAngle = secondFractalAngle;
+float fractalAngle = PI/2;
+float initialAngle = fractalAngle;
 
-float subAmt = 1;
+// radius of outermost circle in fractal
+float radius = 130;
+
+// determines distance between outer and inner circles
+// larger = more spaced out
+float divAmount = 2;
+
+// number of generated circles to show in the fractal
+// -1 means all circles 
+// >= 0 means some of the generated circles
+int circleShowAmount = -1;
 
 void setup() {
   size(450, 800);
@@ -40,26 +54,19 @@ void setup() {
   colorArray(circleAmount, colors, startColor, endColor);
   
   // set coordinates and move amount for color palette lines
-  topY = centerY - height/4;
-  bottomY = centerY + height/4;
-  moveAmount = 0.01;
+  topY = centerY - height/4 - radius/2;
+  bottomY = centerY + height/4 + radius/2;
   
-  // draw preset "sunset" colored fractal
+  // //draw preset "sunset" colored fractal
   //drawCircles(6, 200, 100);
-  
-  
-  fill(startColor, 100);
-  translate(centerX, centerY);
-  drawFractal(circleAmount, firstFractalAngle, 100, 0, 0);
-  drawFractal(circleAmount, secondFractalAngle, -100, 0, 0);
-  
-  //drawFractal(5, PI*2, -200, 0, 0);
 }
 
 void draw() { 
   
     // clear the background on each frame
     background(0);
+    
+    //drawCircles(6, 200, 100);
 
     // draw the color palette lines on each frame 
     // so they won't be lost / cleared
@@ -69,20 +76,23 @@ void draw() {
     translate(centerX, centerY);
     
     // left fractal
-    drawFractal(circleAmount, firstFractalAngle, 100, 0, 0); 
+    drawFractal(circleAmount, fractalAngle, radius, 0, 0); 
     // right fractal
-    drawFractal(circleAmount, firstFractalAngle, -100, 0, 0);
+    drawFractal(circleAmount, fractalAngle, -radius, 0, 0);
     
     // rotate fractal (in radians) by a small amount each frame
-    firstFractalAngle += moveAmount;
+    fractalAngle += moveAmount;
 
     // check if the fractal has traveled half a circle
-    if((abs(firstFractalAngle - initialAngle) >= 3*PI/2 && moveAmount > 0)
-    || (firstFractalAngle - initialAngle <= -PI/2 && moveAmount < 0)){
+    if((abs(fractalAngle - initialAngle) >= 3*PI/2 && moveAmount > 0)
+    || (fractalAngle - initialAngle <= -PI/2 && moveAmount < 0)){
       // Regenerate new colors 
       colorArray(circleAmount, colors, startColor, endColor);
       // start moving fractal in the opposite direction
       moveAmount = -moveAmount;
+      circleAmount++;
+      // DEBUGGING
+      //debugIter++;
     }
 }
 
@@ -133,7 +143,15 @@ void draw() {
   // "endColor" to the array passed in, in-place
   colors.clear();
   populateColors(numColors, colors, startColor, endColor);
-   
+  
+  //DEBUGGING
+  //if(debugIter == 0){
+  //  colorsUsed = new ArrayList<Boolean>();
+  //  for(int i = 0; i < colors.size(); i++) {
+  //    colorsUsed.add(false);
+  //  }
+  //}
+  
  }
 
 /**
@@ -158,7 +176,7 @@ void draw() {
    }
    
    // stop the recursive generation when max colors have been reached
-   if(numColors == 0){
+   if(numColors <= 0){
      // add the last color
      colors.add(endColor);
      return;
@@ -170,9 +188,9 @@ void draw() {
    colors.add(generatedLerpColor);
    
    // generate the half-way color of the first half 
-   populateColors(numColors - 1, colors, startColor, generatedLerpColor);
+   populateColors(numColors - 2, colors, startColor, generatedLerpColor);
    // generate the half-way color of the second half 
-   populateColors(numColors - 1, colors, generatedLerpColor, endColor);
+   populateColors(numColors - 2, colors, generatedLerpColor, endColor);
 }
 
 /**
@@ -186,7 +204,7 @@ void draw() {
  * @param negativeAngle  Indicates whether the circles are drawn in the 
  *                       negative angle direction.
  */
-void drawInnerCircles(int depth, float angle, float radius, boolean negativeAngle){
+void drawInnerCircles(int depth, float angle, float radius, boolean negativeAngle, int colorIndex){
   
     // base case, inner most circle reached
     if(depth == 0){
@@ -196,12 +214,20 @@ void drawInnerCircles(int depth, float angle, float radius, boolean negativeAngl
     // draws inner circles recursively on either side depending on the value
     // of negativeAngle
     if(negativeAngle){
+      //DEBUGGING
+      //colorsUsed.set(colorIndex, true);
+      //println("RETRIEVED NEGATIVE COLOR, INDEX IS ", colorIndex);
+      fill(colors.get(colorIndex), 120);
       circle((radius+depth) * cos(-angle), (radius-depth) * sin(-angle), radius);
     } else{
+      //DEBUGGING
+      //colorsUsed.set(colors.size() - 1 - colorIndex, true); 
+      //println("RETRIEVED POSITIVE COLOR, INDEX IS ", colors.size() - 1 - colorIndex);
+      fill(colors.get(colors.size() - 1 - colorIndex), 120);   
       circle((radius-depth) * cos(angle), (radius+depth) * sin(angle), radius);
     }
   
-  drawInnerCircles(depth - 1, angle, radius/2, negativeAngle);
+  drawInnerCircles(depth - 1, angle, radius/divAmount, negativeAngle, colorIndex);
 }
 
 /**
@@ -214,23 +240,19 @@ void drawInnerCircles(int depth, float angle, float radius, boolean negativeAngl
  * @param colorIndex  The index of the color in the gradient used for the current layer.
  * @param reached     The number of times the recursion has reached this point.
  */
-void drawFractal(int depth, float angle, int radius, int colorIndex, int reached){
+void drawFractal(int depth, float angle, float radius, int colorIndex, int reached){
   
   // base case, circle at last angle drawn
   if(depth == 0){
     return;
   }
   
-  // prevents an extra overlapping circle from being drawn
-  if (reached > 1){
-    
+  // prevents the extra circles from being drawn
+  if (reached > circleShowAmount){
     // draw all the inner circles for both "halfway" points 
     // drawn at the current interation
-    fill(colors.get(colorIndex + 1), 120);
-    drawInnerCircles(8, angle, radius, true);
-    
-    fill(colors.get(colors.size() - 2 - colorIndex), 120);
-    drawInnerCircles(8, angle, radius, false);
+    drawInnerCircles(innerDepth, angle, radius, true, colorIndex);
+    drawInnerCircles(innerDepth, angle, radius, false, colorIndex);
   }
   
   // draw the next outer circle 
