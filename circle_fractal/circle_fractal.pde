@@ -1,12 +1,17 @@
 ArrayList<Integer> colors = new ArrayList<>();
 
 //DEBUGGING: UNCOMMENT TO CHECK IF ALL COLORS USED
-//ArrayList<Boolean> colorsUsed = new ArrayList<>();
-//int debugIter = 0; 
+ArrayList<Boolean> colorsUsed = new ArrayList<>();
+int debugIter = 0; 
 
 // number of outer circles to draw
 // excluding the first and last one
-int circleAmount = 5;
+int circleAmount = 0;
+
+// number of generated circles to show in the fractal
+// -1 means all circles 
+// >= 0 means some of the generated circles
+int circleShowAmount = -1;
 
 // number of inner circle layers to draw
 int innerDepth = 8;
@@ -34,12 +39,18 @@ float radius = 130;
 
 // determines distance between outer and inner circles
 // larger = more spaced out
-float divAmount = 2;
+float layerSpacing = 2;
 
-// number of generated circles to show in the fractal
-// -1 means all circles 
-// >= 0 means some of the generated circles
-int circleShowAmount = -1;
+HashMap<String, Integer> variables = new HashMap<String, Integer>() {{
+  put("circleAmount", 0);
+  put("circleShowAmount", 1);
+  put("innerDepth", 2);
+  put("moveAmount", 3);
+  put("radius", 4);
+  put("layerSpacing", 5);
+}};
+
+
 
 void setup() {
   size(450, 800);
@@ -65,6 +76,7 @@ void draw() {
   
     // clear the background on each frame
     background(0);
+    displayParameters();
     
     //drawCircles(6, 200, 100);
 
@@ -94,6 +106,15 @@ void draw() {
       // DEBUGGING
       //debugIter++;
     }
+}
+
+
+void displayParameters(){
+  textSize(17);
+  fill(0, 408, 612);
+  text("Circle Amount: " + circleAmount, centerX - width/3, topY - height/10); 
+  text("Inner Depth: " + innerDepth, centerX - width/3, topY - height/8); 
+  
 }
 
 /**
@@ -227,7 +248,7 @@ void drawInnerCircles(int depth, float angle, float radius, boolean negativeAngl
       circle((radius-depth) * cos(angle), (radius+depth) * sin(angle), radius);
     }
   
-  drawInnerCircles(depth - 1, angle, radius/divAmount, negativeAngle, colorIndex);
+  drawInnerCircles(depth - 1, angle, radius/layerSpacing, negativeAngle, colorIndex);
 }
 
 /**
