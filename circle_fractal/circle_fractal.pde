@@ -4,14 +4,17 @@ ArrayList<Integer> colors = new ArrayList<>();
 //ArrayList<Boolean> colorsUsed = new ArrayList<>();
 //int debugIter = 0; 
 
-// number of outer circles to draw
+// number*4 of outer circles to draw
 // excluding the first and last one
-int circleAmount = 1;
+// the amount of hands displayed will be 4x this number
+int circleAmount = 2;
 
 // number of generated circles to show in the fractal
-// -1 means all circles 
-// >= 0 means some of the generated circles
-int circleShowAmount = -1;
+// 0 means all circles shown 
+// >= 1 means some of the generated circles are hidden
+int circleHideAmount = 0;
+int circleHideChange = 1;
+boolean showHideChange = false;
 
 // number of inner circle layers to draw
 int innerDepth = 8;
@@ -27,6 +30,11 @@ float bottomY;
 // amount that fractal rotates from the center per frame
 float moveAmount = 0.01;
 
+// little delta that speeds up the movement along the arc
+// make value > 0 if you don't want a constant pace 
+// fractal will move really quickly after a while if this number is big
+float moveChange = 0.0005;
+
 // start and end colors of fractal gradient
 color startColor;
 color endColor;
@@ -36,6 +44,9 @@ float initialAngle = fractalAngle;
 
 // radius of outermost circle in fractal
 float radius = 130;
+float initialRadius = radius;
+float radiusChange = 0.5;
+boolean doRadiusChange = true;
 
 // determines distance between outer and inner circles
 // larger = more spaced out
@@ -87,6 +98,10 @@ void draw() {
     
     // rotate fractal (in radians) by a small amount each frame
     fractalAngle += moveAmount;
+    
+    handleParameterChanges();
+    
+   
 
     // check if the fractal has traveled half a circle
     if((abs(fractalAngle - initialAngle) >= 3*PI/2 && moveAmount > 0)
@@ -95,10 +110,41 @@ void draw() {
       colorArray(circleAmount, colors, startColor, endColor);
       // start moving fractal in the opposite direction
       moveAmount = -moveAmount;
-      circleAmount++;
+      
+      if(showHideChange){
+        circleHideAmount += circleHideChange;
+      }
+      
+      if(doRadiusChange){
+        radius *= radiusChange;
+      } 
+      
+   
       // DEBUGGING
       //debugIter++;
     }
+}
+
+
+void handleParameterChanges(){
+  
+  // move amount
+  if (moveChange < 0) {
+    moveAmount-=moveChange;
+  } else {
+    moveAmount+=moveChange;
+  }
+  
+  // number of circles hidden
+  if (showHideChange && (circleHideAmount >= circleAmount || circleHideAmount <= 0)) {
+    circleHideChange = -circleHideChange;
+  }
+  
+  // radius of outermost circle 
+  if(doRadiusChange && (radius >= initialRadius || radius < 10)){
+       radiusChange = 1/radiusChange; 
+  }
+  
 }
 
 
@@ -108,12 +154,13 @@ void displayParameters(){
   fill(0, 408, 612);
   
   textAlign(LEFT);
-  text("Circle Amount: " + circleAmount*2, centerX - width/2.5, topY - height/10); 
-  text("Circle Show Amount: " + circleShowAmount, centerX - width/2.5, 1.5*(topY - height/10)); 
+  text("Total Circles per Layer: " + circleAmount*4, centerX - width/2.5, topY - height/10); 
+  text("Circles Hidden: " + circleHideAmount*4, centerX - width/2.5, 1.5*(topY - height/10)); 
   text("Inner Depth: " + innerDepth, centerX - width/2.5, 2*(topY - height/10)); 
   
   textAlign(RIGHT);
-  text("Move Amount: " + moveAmount, centerX + width/2.5, topY - height/10); 
+  text("Move Amount: ", centerX + width/2.5 - width/10, topY - height/10); 
+  text(moveAmount, centerX + width/2.5, topY - height/10); 
   text("Outer Radius: " + radius, centerX + width/2.5, 1.5*(topY - height/10)); 
   text("Layer Spacing: " + layerSpacing, centerX + width/2.5, 2*(topY - height/10)); 
   
@@ -277,7 +324,7 @@ void drawFractal(int depth, float angle, float radius, int colorIndex, int reach
   }
   
   // prevents the extra circles from being drawn
-  if (reached > circleShowAmount){
+  if (reached >= circleHideAmount){
     // draw all the inner circles for both "halfway" points 
     // drawn at the current interation
     drawInnerCircles(innerDepth, angle, radius, true, colorIndex);
