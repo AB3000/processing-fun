@@ -7,7 +7,7 @@ ArrayList<Integer> colors = new ArrayList<>();
 // number*4 of outer circles to draw
 // excluding the first and last one
 // the amount of hands displayed will be 4x this number
-int circleAmount = 1;
+int circleAmount = 3;
 // demonstrate number of circles change in real time
 //radius boundaries to display, min and max
 // along with rate of change 
