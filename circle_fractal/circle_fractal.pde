@@ -7,7 +7,7 @@ ArrayList<Integer> colors = new ArrayList<>();
 // number*4 of outer circles to draw
 // excluding the first and last one
 // the amount of hands displayed will be 4x this number
-int circleAmount = 2;
+int circleAmount = 3;
 
 // number of generated circles to show in the fractal
 // 0 means all circles shown 
@@ -29,7 +29,6 @@ float bottomY;
 
 // amount that fractal rotates from the center per frame
 float moveAmount = 0.01;
-
 // little delta that speeds up the movement along the arc
 // make value > 0 if you don't want a constant pace 
 // fractal will move really quickly after a while if this number is big
@@ -44,17 +43,26 @@ float initialAngle = fractalAngle;
 
 // radius of outermost circle in fractal
 float radius = 130;
-float initialRadius = radius;
+// demonstrate radius change in real time
+//radius boundaries to display, min and max
+// along with rate of change 
+float minRadius = 5;
+float maxRadius = radius;
 float radiusChange = 0.5;
 boolean doRadiusChange = true;
+
 
 // determines distance between outer and inner circles
 // larger = more spaced out
 float layerSpacing = 2;
+// demonstate layer spacing in real time
+//boundaries of the layer spacing, min and max
+// along with rate of change 
+float maxLayerSpacing = 5;
+float minLayerSpacing = 1;
+float layerSpacingChange = 0.01;
+boolean doLayerSpacingChange = true;
 
-//parameters of interest corresponding to key that will be 
-// changed on each frame & highlighted through the animation
-int[] parametersOfInterest = {0, 1, 2};
 
 void setup() {
   size(450, 800);
@@ -101,7 +109,13 @@ void draw() {
     
     handleParameterChanges();
     
-   
+    if(doRadiusChange){
+      radius += radiusChange;
+    } 
+    
+    if(doLayerSpacingChange){
+      layerSpacing += layerSpacingChange;
+    } 
 
     // check if the fractal has traveled half a circle
     if((abs(fractalAngle - initialAngle) >= 3*PI/2 && moveAmount > 0)
@@ -114,12 +128,7 @@ void draw() {
       if(showHideChange){
         circleHideAmount += circleHideChange;
       }
-      
-      if(doRadiusChange){
-        radius *= radiusChange;
-      } 
-      
-   
+     
       // DEBUGGING
       //debugIter++;
     }
@@ -141,8 +150,12 @@ void handleParameterChanges(){
   }
   
   // radius of outermost circle 
-  if(doRadiusChange && (radius >= initialRadius || radius < 10)){
-       radiusChange = 1/radiusChange; 
+  if(doRadiusChange && (radius > maxRadius || radius < minRadius)){
+       radiusChange = -radiusChange; 
+  }
+  
+  if(doLayerSpacingChange && (layerSpacing > maxLayerSpacing || layerSpacing < minLayerSpacing)){
+       layerSpacingChange = -layerSpacingChange; 
   }
   
 }
@@ -162,7 +175,8 @@ void displayParameters(){
   text("Move Amount: ", centerX + width/2.5 - width/10, topY - height/10); 
   text(moveAmount, centerX + width/2.5, topY - height/10); 
   text("Outer Radius: " + radius, centerX + width/2.5, 1.5*(topY - height/10)); 
-  text("Layer Spacing: " + layerSpacing, centerX + width/2.5, 2*(topY - height/10)); 
+  text("Layer Spacing: ", centerX + width/2.5 - width/10, 2*(topY - height/10));
+  text(layerSpacing, centerX + width/2.5, 2*(topY - height/10)); 
   
   textSize(20);
   textAlign(RIGHT);
