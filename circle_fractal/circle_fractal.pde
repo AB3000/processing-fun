@@ -20,14 +20,7 @@ int circleChange = 1;
 boolean doCircleChange = true;
 
 
-// number of generated circles to show in the fractal
-// 0 means all circles shown 
-// >= 1 means some of the generated circles are hidden
 int circleHideAmount = 0;
-int circleHideChange = 1;
-//WARNING: Do not set true if "circleChange" is true
-// could cause a race condition
-boolean doHideChange = true;
 
 // number of inner circle layers to draw
 int innerDepth = 3;
@@ -134,11 +127,7 @@ void draw() {
       if(doCircleChange){
         circleAmount += circleChange;
       } 
-      
-      if(doHideChange){
-        circleHideAmount += circleHideChange;
-      }
-      
+     
       if(doDepthChange){
         innerDepth += depthChange;
       }
@@ -188,18 +177,6 @@ void handleParameterChanges(){
      }
   }
   
-  // number of circles hidden
-  if (doHideChange && (circleHideAmount >= circleAmount || circleHideAmount <= minCircleAmount)) {
-     if (circleHideAmount >= circleAmount){
-       circleHideAmount = circleAmount - 1;
-       circleHideChange = -abs(circleHideChange);
-     }
-     if (circleHideAmount <= minCircleAmount){
-       circleHideAmount = minCircleAmount;
-       circleHideChange = abs(circleHideChange);
-     }
-  }
-  
   // radius of outermost circle 
   if(doRadiusChange && (radius >= maxRadius || radius <= minRadius)){; 
       if (radius >= maxRadius){
@@ -246,11 +223,11 @@ void displayParameters(){
   fill(regular);
   
   textAlign(LEFT);
-  fill(doCircleChange ? changedParameter : regular);
-  text("Total Circles per Layer: " + circleAmount*4, centerX - width/2.5, topY - height/10); 
   
-  fill(doHideChange ? changedParameter : regular);
-  text("Circles Hidden: " + circleHideAmount*4, centerX - width/2.5, 1.5*(topY - height/10)); 
+  text("Angle: " + nf(fractalAngle, 0, 4), centerX - width/2.5, topY - height/10); 
+  
+  fill(doCircleChange ? changedParameter : regular);
+  text("Total Circles per Layer: " + circleAmount*4, centerX - width/2.5, 1.5*(topY - height/10)); 
   
   fill(doDepthChange ? changedParameter : regular);
   text("Inner Depth: " + innerDepth, centerX - width/2.5, 2*(topY - height/10)); 
@@ -270,10 +247,6 @@ void displayParameters(){
   text("Layer Spacing: ", centerX + width/2.5 - width/10, 2*(topY - height/10));
   text(layerSpacing, centerX + width/2.5, 2*(topY - height/10)); 
   
-  textSize(20);
-  textAlign(RIGHT);
-  text("Angle: ", centerX, bottomY + height/10); 
-  text(fractalAngle, centerX + width/10, bottomY + height/10); 
   
 }
 
