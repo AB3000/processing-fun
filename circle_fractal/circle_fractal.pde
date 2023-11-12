@@ -7,13 +7,26 @@ ArrayList<Integer> colors = new ArrayList<>();
 // number*4 of outer circles to draw
 // excluding the first and last one
 // the amount of hands displayed will be 4x this number
-int circleAmount = 3;
+int circleAmount = 1;
+// demonstrate number of circles change in real time
+//radius boundaries to display, min and max
+// along with rate of change 
+int minCircleAmount = 1;
+int maxCircleAmount = 7;
+int circleChange = 1;
+
+//WARNING: Do not set true if "showHideChange" is true
+// could cause a race condition
+boolean doCircleChange = true;
+
 
 // number of generated circles to show in the fractal
 // 0 means all circles shown 
 // >= 1 means some of the generated circles are hidden
 int circleHideAmount = 0;
 int circleHideChange = 1;
+//WARNING: Do not set true if "circleChange" is true
+// could cause a race condition
 boolean showHideChange = false;
 
 // number of inner circle layers to draw
@@ -61,7 +74,7 @@ float layerSpacing = 2;
 float maxLayerSpacing = 5;
 float minLayerSpacing = 1;
 float layerSpacingChange = 0.01;
-boolean doLayerSpacingChange = true;
+boolean doLayerSpacingChange = false;
 
 
 void setup() {
@@ -116,6 +129,9 @@ void draw() {
     if(doLayerSpacingChange){
       layerSpacing += layerSpacingChange;
     } 
+   
+    
+
 
     // check if the fractal has traveled half a circle
     if((abs(fractalAngle - initialAngle) >= 3*PI/2 && moveAmount > 0)
@@ -128,6 +144,11 @@ void draw() {
       if(showHideChange){
         circleHideAmount += circleHideChange;
       }
+      
+      if(doCircleChange){
+        circleAmount += circleChange;
+      } 
+     
      
       // DEBUGGING
       //debugIter++;
@@ -142,6 +163,11 @@ void handleParameterChanges(){
     moveAmount-=moveChange;
   } else {
     moveAmount+=moveChange;
+  }
+  
+  // number of circles in outer later change
+  if (doCircleChange && (circleAmount >= maxCircleAmount || circleAmount <= minCircleAmount)) {
+    circleChange = -circleChange;
   }
   
   // number of circles hidden
