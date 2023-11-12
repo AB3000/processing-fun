@@ -17,7 +17,7 @@ int circleChange = 1;
 
 //WARNING: Do not set true if "doHideChange" is true
 // could cause a race condition
-boolean doCircleChange = true;
+boolean doCircleChange = false;
 
 
 int circleHideAmount = 0;
@@ -30,7 +30,7 @@ int innerDepth = 3;
 int minDepth = 1;
 int maxDepth = 5;
 int depthChange = 1;
-boolean doDepthChange = true;
+boolean doDepthChange = false;
 
 // center of the canvas
 float centerX;
@@ -41,11 +41,11 @@ float topY;
 float bottomY; 
 
 // amount that fractal rotates from the center per frame
-float moveAmount = 0.01;
+float moveAmount = 0;
 // little delta that speeds up the movement along the arc
 // make value > 0 if you don't want a constant pace 
 // fractal will move really quickly after a while if this number is big
-float moveChange = 0.0005;
+float moveChange = 0.005;
 
 // start and end colors of fractal gradient
 color startColor;
@@ -62,7 +62,7 @@ float radius = 130;
 float minRadius = 5;
 float maxRadius = radius;
 float radiusChange = 0.5;
-boolean doRadiusChange = true;
+boolean doRadiusChange = false;
 
 
 // determines distance between outer and inner circles
@@ -74,7 +74,7 @@ float layerSpacing = 2;
 float maxLayerSpacing = 5;
 float minLayerSpacing = 0.5;
 float layerSpacingChange = 0.01;
-boolean doLayerSpacingChange = true;
+boolean doLayerSpacingChange = false;
 
 
 void setup() {
@@ -157,12 +157,14 @@ void draw() {
 void handleParameterChanges(){
   
   // move amount
-  if (moveChange < 0) {
-    moveAmount-=moveChange;
-  } else {
-    moveAmount+=moveChange;
+  if(abs(moveAmount) > 0){
+    if (moveChange < 0) {
+      moveAmount-=moveChange;
+    } else {
+      moveAmount+=moveChange;
+    }
   }
-  
+
   // number of circles in outer later change
   if (doCircleChange && (circleAmount >= maxCircleAmount || circleAmount <= minCircleAmount)) {
     println("THE CIRCLE AMOUNT IS ", circleAmount);
@@ -234,7 +236,7 @@ void displayParameters(){
   
   textAlign(RIGHT);
   //change if you don't want move to be colored as if it were a changed parameter
-  fill(changedParameter);
+  fill(abs(moveAmount) > 0 ? changedParameter: regular);
   text("Move Amount: ", centerX + width/2.5 - width/10, topY - height/10); 
   text(moveAmount, centerX + width/2.5, topY - height/10); 
   
