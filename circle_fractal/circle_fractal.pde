@@ -12,10 +12,10 @@ int circleAmount = 1;
 //radius boundaries to display, min and max
 // along with rate of change 
 int minCircleAmount = 1;
-int maxCircleAmount = 7;
+int maxCircleAmount = 6;
 int circleChange = 1;
 
-//WARNING: Do not set true if "showHideChange" is true
+//WARNING: Do not set true if "doHideChange" is true
 // could cause a race condition
 boolean doCircleChange = true;
 
@@ -27,10 +27,17 @@ int circleHideAmount = 0;
 int circleHideChange = 1;
 //WARNING: Do not set true if "circleChange" is true
 // could cause a race condition
-boolean showHideChange = false;
+boolean doHideChange = true;
 
 // number of inner circle layers to draw
-int innerDepth = 8;
+int innerDepth = 3;
+// demonstrate number of inner circles change in real time
+//radius boundaries to display, min and max
+// along with rate of change 
+int minDepth = 1;
+int maxDepth = 5;
+int depthChange = 1;
+boolean doDepthChange = true;
 
 // center of the canvas
 float centerX;
@@ -72,9 +79,9 @@ float layerSpacing = 2;
 //boundaries of the layer spacing, min and max
 // along with rate of change 
 float maxLayerSpacing = 5;
-float minLayerSpacing = 1;
+float minLayerSpacing = 0.5;
 float layerSpacingChange = 0.01;
-boolean doLayerSpacingChange = false;
+boolean doLayerSpacingChange = true;
 
 
 void setup() {
@@ -113,14 +120,38 @@ void draw() {
     translate(centerX, centerY);
     
     // left fractal
-    drawFractal(circleAmount, fractalAngle, radius, 0, 0); 
+    drawFractal(circleAmount, fractalAngle, radius, 0, 0, innerDepth); 
     // right fractal
-    drawFractal(circleAmount, fractalAngle, -radius, 0, 0);
+    drawFractal(circleAmount, fractalAngle, -radius, 0, 0, innerDepth);
     
     // rotate fractal (in radians) by a small amount each frame
     fractalAngle += moveAmount;
-    
-    handleParameterChanges();
+        
+    // check if the fractal has traveled half a circle
+    if((abs(fractalAngle - initialAngle) >= 3*PI/2 && moveAmount > 0)
+    || (fractalAngle - initialAngle <= -PI/2 && moveAmount < 0)){
+            
+      if(doCircleChange){
+        circleAmount += circleChange;
+      } 
+      
+      if(doHideChange){
+        circleHideAmount += circleHideChange;
+      }
+      
+      if(doDepthChange){
+        innerDepth += depthChange;
+      }
+      
+      // Regenerate new colors 
+      colorArray(circleAmount, colors, startColor, endColor);
+      // start moving fractal in the opposite direction
+      moveAmount = -moveAmount;
+     
+     
+      // DEBUGGING
+      //debugIter++;
+    }
     
     if(doRadiusChange){
       radius += radiusChange;
@@ -129,30 +160,8 @@ void draw() {
     if(doLayerSpacingChange){
       layerSpacing += layerSpacingChange;
     } 
-   
     
-
-
-    // check if the fractal has traveled half a circle
-    if((abs(fractalAngle - initialAngle) >= 3*PI/2 && moveAmount > 0)
-    || (fractalAngle - initialAngle <= -PI/2 && moveAmount < 0)){
-      // Regenerate new colors 
-      colorArray(circleAmount, colors, startColor, endColor);
-      // start moving fractal in the opposite direction
-      moveAmount = -moveAmount;
-      
-      if(showHideChange){
-        circleHideAmount += circleHideChange;
-      }
-      
-      if(doCircleChange){
-        circleAmount += circleChange;
-      } 
-     
-     
-      // DEBUGGING
-      //debugIter++;
-    }
+    handleParameterChanges();
 }
 
 
@@ -167,40 +176,97 @@ void handleParameterChanges(){
   
   // number of circles in outer later change
   if (doCircleChange && (circleAmount >= maxCircleAmount || circleAmount <= minCircleAmount)) {
-    circleChange = -circleChange;
+    println("THE CIRCLE AMOUNT IS ", circleAmount);
+      // bind the parameter so its within the specified range
+     if (circleAmount >= maxCircleAmount){
+       circleAmount = maxCircleAmount;
+       circleChange = -abs(circleChange);
+     }
+      if (circleAmount <= minCircleAmount){
+       circleAmount = minCircleAmount;
+       circleChange = abs(circleChange);
+     }
   }
   
   // number of circles hidden
-  if (showHideChange && (circleHideAmount >= circleAmount || circleHideAmount <= 0)) {
-    circleHideChange = -circleHideChange;
+  if (doHideChange && (circleHideAmount >= circleAmount || circleHideAmount <= minCircleAmount)) {
+     if (circleHideAmount >= circleAmount){
+       circleHideAmount = circleAmount - 1;
+       circleHideChange = -abs(circleHideChange);
+     }
+     if (circleHideAmount <= minCircleAmount){
+       circleHideAmount = minCircleAmount;
+       circleHideChange = abs(circleHideChange);
+     }
   }
   
   // radius of outermost circle 
-  if(doRadiusChange && (radius > maxRadius || radius < minRadius)){
-       radiusChange = -radiusChange; 
+  if(doRadiusChange && (radius >= maxRadius || radius <= minRadius)){; 
+      if (radius >= maxRadius){
+        radius = maxRadius;
+        radiusChange = -abs(radiusChange);
+      }
+      if (radius <= minRadius){
+        radius = minRadius;
+        radiusChange = abs(radiusChange);
+      }
   }
   
-  if(doLayerSpacingChange && (layerSpacing > maxLayerSpacing || layerSpacing < minLayerSpacing)){
+  if(doLayerSpacingChange && (layerSpacing >= maxLayerSpacing || layerSpacing <= minLayerSpacing)){
        layerSpacingChange = -layerSpacingChange; 
+      if (layerSpacing >= maxLayerSpacing){
+        layerSpacing = maxLayerSpacing;
+        layerSpacingChange = -abs(layerSpacingChange);
+      }
+      if (radius <= minRadius){
+        layerSpacing = minLayerSpacing;
+        layerSpacingChange = abs(layerSpacingChange);
+      }
   }
   
+  if(doDepthChange && (innerDepth >= maxDepth || innerDepth <= minDepth)){
+    // bind the parameter so its within the specified range
+     if (innerDepth >= maxDepth){
+       innerDepth = maxDepth;
+       depthChange = -abs(depthChange);
+     }
+      if (innerDepth <= minDepth){
+       innerDepth = minDepth;
+       depthChange = abs(depthChange);
+     }
+  }
 }
 
 
 void displayParameters(){
   // display parameters 
   textSize(17);
-  fill(0, 408, 612);
+  color regular = color(230, 255, 255); 
+  color changedParameter = color(0, 408, 612);
+  fill(regular);
   
   textAlign(LEFT);
+  fill(doCircleChange ? changedParameter : regular);
   text("Total Circles per Layer: " + circleAmount*4, centerX - width/2.5, topY - height/10); 
+  
+  fill(doHideChange ? changedParameter : regular);
   text("Circles Hidden: " + circleHideAmount*4, centerX - width/2.5, 1.5*(topY - height/10)); 
+  
+  fill(doDepthChange ? changedParameter : regular);
   text("Inner Depth: " + innerDepth, centerX - width/2.5, 2*(topY - height/10)); 
   
   textAlign(RIGHT);
+  //change if you don't want move to be colored as if it were a changed parameter
+  fill(changedParameter);
   text("Move Amount: ", centerX + width/2.5 - width/10, topY - height/10); 
   text(moveAmount, centerX + width/2.5, topY - height/10); 
-  text("Outer Radius: " + radius, centerX + width/2.5, 1.5*(topY - height/10)); 
+  
+  fill(doRadiusChange ? changedParameter : regular);
+  text("Outer Radius: ", centerX + width/2.5 - width/10, 1.5*(topY - height/10)); 
+  //round to two decimal places for better readability
+  text(nf(radius, 0, 2), centerX + width/2.5, 1.5*(topY - height/10)); 
+  
+  fill(doLayerSpacingChange ? changedParameter : regular);
   text("Layer Spacing: ", centerX + width/2.5 - width/10, 2*(topY - height/10));
   text(layerSpacing, centerX + width/2.5, 2*(topY - height/10)); 
   
@@ -326,7 +392,9 @@ void drawInnerCircles(int depth, float angle, float radius, boolean negativeAngl
     if(depth == 0){
       return;
     }
+
   
+    //println("COLOR SIZE IS ", colors.size());
     // draws inner circles recursively on either side depending on the value
     // of negativeAngle
     if(negativeAngle){
@@ -356,7 +424,7 @@ void drawInnerCircles(int depth, float angle, float radius, boolean negativeAngl
  * @param colorIndex  The index of the color in the gradient used for the current layer.
  * @param reached     The number of times the recursion has reached this point.
  */
-void drawFractal(int depth, float angle, float radius, int colorIndex, int reached){
+void drawFractal(int depth, float angle, float radius, int colorIndex, int reached, int innerDepth){
   
   // base case, circle at last angle drawn
   if(depth == 0){
@@ -372,6 +440,6 @@ void drawFractal(int depth, float angle, float radius, int colorIndex, int reach
   }
   
   // draw the next outer circle 
-  drawFractal(depth-1, angle/2, radius, colorIndex + 1, reached+1);
+  drawFractal(depth-1, angle/2, radius, colorIndex + 1, reached+1, innerDepth);
   
 }
