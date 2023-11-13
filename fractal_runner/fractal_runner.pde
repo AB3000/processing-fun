@@ -17,7 +17,7 @@ boolean doCircleChange = false;
 int circleHideAmount = -1;
 
 // number of inner circle layers to draw
-int innerDepth = 1;
+int innerDepth = 10;
 // demonstrate number of inner circles change in real time
 //radius boundaries to display, min and max
 // along with rate of change 
@@ -35,7 +35,7 @@ float moveAmount = 0.01;
 float moveChange = 0;
 
 // radius of outermost circle in fractal
-float radius = 130;
+float radius = 125;
 // demonstrate radius change in real time
 //radius boundaries to display, min and max
 // along with rate of change 
@@ -103,8 +103,8 @@ void setup() {
   }
   
   // set coordinates and move amount for color palette lines
-  topY = centerY - height/4 - radius/2;
-  bottomY = centerY + height/4 + radius/2;
+  topY = centerY - height/5 - radius/2;
+  bottomY = centerY + height/5 + radius/2;
 
 }
 
@@ -225,31 +225,55 @@ void displayParameters(){
   color changedParameter = color(0, 408, 612);
   fill(regular);
   
+  // arrange parameters 
+  float baseHeightPlace = topY - height/6;
+  float startingPoint = 2.5;
+  float spacer = 0.5;
+  
+  
   textAlign(LEFT);
   
   fill(abs(moveAmount) > 0 ? changedParameter: regular);
-  text("Angle(rad): " + nf(fractalAngle, 0, 4), centerX - width/2.5, topY - height/10); 
+  text("Angle(rad): " + nf(fractalAngle, 0, 4), centerX - width/2.5, startingPoint*baseHeightPlace); 
+  startingPoint+=spacer;
   
   fill(doCircleChange ? changedParameter : regular);
-  text("Total Circles per Layer: " + circleAmount*4, centerX - width/2.5, 1.5*(topY - height/10)); 
+  text("Total Circles per Layer: " + circleAmount*4, centerX - width/2.5, startingPoint*(baseHeightPlace)); 
+  startingPoint+=spacer;
   
   fill(doDepthChange ? changedParameter : regular);
-  text("Inner Depth: " + innerDepth, centerX - width/2.5, 2*(topY - height/10)); 
+  text("Inner Depth: " + innerDepth, centerX - width/2.5, startingPoint*(baseHeightPlace)); 
+  
+  //reset starting point
+  startingPoint-=spacer*2;
   
   textAlign(RIGHT);
   
   fill(abs(moveAmount) > 0 ? changedParameter: regular);
-  text("Move Amount: ", centerX + width/2.5 - width/10, topY - height/10); 
-  text(moveAmount, centerX + width/2.5, topY - height/10); 
+  text("Move Amount: ", centerX + width/2.5 - width/10, startingPoint*baseHeightPlace); 
+  text(moveAmount, centerX + width/2.5, startingPoint*baseHeightPlace); 
+  startingPoint+=spacer;
   
   fill(doRadiusChange ? changedParameter : regular);
-  text("Outer Radius: ", centerX + width/2.5 - width/10, 1.5*(topY - height/10)); 
+  text("Outer Radius: ", centerX + width/2.5 - width/10, startingPoint*baseHeightPlace); 
   //round to two decimal places for better readability
-  text(nf(radius, 0, 2), centerX + width/2.5, 1.5*(topY - height/10)); 
+  text(nf(radius, 0, 2), centerX + width/2.5, startingPoint*baseHeightPlace); 
+  startingPoint+=spacer;
   
   fill(doLayerSpacingChange ? changedParameter : regular);
-  text("Layer Spacing: ", centerX + width/2.5 - width/10, 2*(topY - height/10));
-  text(layerSpacing, centerX + width/2.5, 2*(topY - height/10)); 
+  text("Layer Spacing: ", centerX + width/2.5 - width/10, startingPoint*baseHeightPlace);
+  text(layerSpacing, centerX + width/2.5, startingPoint*baseHeightPlace); 
+  
+  textAlign(CENTER);
+  String starting = "(" + int(red(startColor))
+  + ", " + int(green(startColor)) + ", "  + int(blue(startColor)) + ")";
+  String ending = "(" + int(red(endColor))
+  + ", " + int(green(endColor)) + ", "  + int(blue(endColor)) + ")";
+  fill(startColor);
+  text("Start Color: " + starting, centerX, bottomY + height/16);
+  fill(endColor);
+  text("End Color: " + ending, centerX, bottomY + 1.5*(height/14));
+  
   
 }
 
