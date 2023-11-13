@@ -1,8 +1,8 @@
-void drawCircleFractal(color[][] colorList){
+void drawCircleFractal(color[][] colorList, String[] colorMeanings){
   
     // clear the background on each frame
     background(0);
-    displayParameters();
+    displayParameters(colorMeanings);
 
     // draw the color palette lines on each frame 
     // so they won't be lost / cleared

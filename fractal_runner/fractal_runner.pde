@@ -99,7 +99,7 @@ void setup() {
   if(useRandomColors){
     colorArray(circleAmount, colors, startColor, endColor);
   } else{
-    colorArray(circleAmount, colors, seasons);
+    colorArray(circleAmount, colors, seasonColors);
   }
   
   // set coordinates and move amount for color palette lines
@@ -113,7 +113,7 @@ void draw() {
     //UNCOMMENT IF YOU WANT TO SEE DEMO OF PARAMETERS
     //doDemo();
     
-    drawCircleFractal(seasons);
+    drawCircleFractal(seasonColors, seasons);
     
   // draw preset "sunset" colored fractal
   //drawCircles(6, 200, 100);
@@ -218,7 +218,7 @@ void handleParameterChanges(){
 }
 
 
-void displayParameters(){
+void displayParameters(String[] colorMeanings){
   // display parameters 
   textSize(17);
   color regular = color(230, 255, 255); 
@@ -264,7 +264,16 @@ void displayParameters(){
   text("Layer Spacing: ", centerX + width/2.5 - width/10, startingPoint*baseHeightPlace);
   text(layerSpacing, centerX + width/2.5, startingPoint*baseHeightPlace); 
   
+  startingPoint-=spacer*4;
+  
   textAlign(CENTER);
+  //display what the color represents on screen 
+  if(!useRandomColors){
+    textSize(25);
+    fill(startColor);
+    text(colorMeanings[colorArrayIndex - 1], centerX, startingPoint*baseHeightPlace);
+    textSize(17);
+  }
   String starting = "(" + int(red(startColor))
   + ", " + int(green(startColor)) + ", "  + int(blue(startColor)) + ")";
   String ending = "(" + int(red(endColor))
