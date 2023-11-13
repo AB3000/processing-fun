@@ -66,6 +66,11 @@ float bottomY;
 // start and end colors of fractal gradient
 color startColor;
 color endColor;
+// if true, generate random start and end colors
+// if false, choose colors from preset array
+boolean useRandomColors = true;
+// current index of the predefined color array, if passed in
+int colorArrayIndex = 0;
 
 // start angle of the fractal
 float fractalAngle = PI/2;
@@ -92,6 +97,7 @@ void setup() {
 
   // Regenerate new colors
   colorArray(circleAmount, colors, startColor, endColor);
+  
   
   // set coordinates and move amount for color palette lines
   topY = centerY - height/4 - radius/2;
@@ -280,7 +286,28 @@ void displayParameters(){
   // generates a random startColor and endColor
   startColor = color(random(100, 255), random(100, 255), random(100, 255));
   endColor = color(random(100, 255), random(100, 255), random(100, 255));
-  
+  // generates a gradient of colors from "startColor" to 
+  // "endColor" to the array passed in, in-place
+  colors.clear();
+  populateColors(numColors, colors, startColor, endColor);
+ }
+ 
+ /**
+ * Generates a random startColor and endColor, then populates an ArrayList with a gradient of colors from
+ * "startColor" to "endColor" using recursive color interpolation. The resulting colors are stored
+ * in "colors", with the startColor at the beginning and the endColor at the end.
+ *
+ * @param numColors   The number of colors in the gradient, excluding 
+ *                    startColor and endColor.
+ * @param colors      The ArrayList to store the generated colors.
+ * @param startColor  The initial color of the gradient.
+ * @param endColor    The final color of the gradient.
+ */
+ void colorArray(int numColors, 
+ ArrayList<Integer> colors, 
+ color[] predefinedColors){
+  // generates a random startColor and endColor
+  startColor = predefinedColors[colorArrayIndex];
   // generates a gradient of colors from "startColor" to 
   // "endColor" to the array passed in, in-place
   colors.clear();
