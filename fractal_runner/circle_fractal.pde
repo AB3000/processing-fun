@@ -1,7 +1,4 @@
-
-
-
-void drawCircleFractal(){
+void drawCircleFractal(color[][] colorList){
   
     // clear the background on each frame
     background(0);
@@ -35,8 +32,15 @@ void drawCircleFractal(){
         innerDepth += depthChange;
       }
       
-      // Regenerate new colors 
-      colorArray(circleAmount, colors, startColor, endColor);
+      if(colorList == null){
+          // Regenerate new random colors 
+          colorArray(circleAmount, colors, startColor, endColor);
+      } else{
+        // generate gradient scale of colors from the two endpoints
+        // in the predefined list passed in
+          colorArray(circleAmount, colors, colorList);
+      }
+
       // start moving fractal in the opposite direction
       moveAmount = -moveAmount;
     }

@@ -3,7 +3,7 @@ ArrayList<Integer> colors = new ArrayList<>();
 // number*4 of outer circles to draw
 // excluding the first and last one
 // the amount of hands displayed will be 4x this number
-int circleAmount = 1;
+int circleAmount = 3;
 // demonstrate number of circles change in real time
 //radius boundaries to display, min and max
 // along with rate of change 
@@ -27,7 +27,7 @@ int depthChange = 1;
 boolean doDepthChange = false;
 
 // amount that fractal rotates from the center per frame
-float moveAmount = 0;
+float moveAmount = 0.01;
 // little delta that speeds up the movement along the arc
 // make value > 0 if you don't want a constant pace 
 // fractal will move really quickly after a while if this number is big
@@ -68,7 +68,7 @@ color startColor;
 color endColor;
 // if true, generate random start and end colors
 // if false, choose colors from preset array
-boolean useRandomColors = true;
+boolean useRandomColors = false;
 // current index of the predefined color array, if passed in
 int colorArrayIndex = 0;
 
@@ -96,8 +96,11 @@ void setup() {
   centerY = height/2;
 
   // Regenerate new colors
-  colorArray(circleAmount, colors, startColor, endColor);
-  
+  if(useRandomColors){
+    colorArray(circleAmount, colors, startColor, endColor);
+  } else{
+    colorArray(circleAmount, colors, seasons);
+  }
   
   // set coordinates and move amount for color palette lines
   topY = centerY - height/4 - radius/2;
@@ -107,8 +110,10 @@ void setup() {
 
 void draw() {     
 
-    doDemo();
-    drawCircleFractal();
+    //UNCOMMENT IF YOU WANT TO SEE DEMO OF PARAMETERS
+    //doDemo();
+    
+    drawCircleFractal(seasons);
     
   // draw preset "sunset" colored fractal
   //drawCircles(6, 200, 100);
@@ -116,20 +121,24 @@ void draw() {
 
 void doDemo(){
   if(frameCount == rateFrames){
+    circleAmount = 1;
     doCircleChange = true;
   }
   
   if(frameCount == rateFrames * changer * 2){
+    innerDepth = 1;
     doCircleChange = false;
     doDepthChange = true;
   }
   
   if(frameCount == rateFrames * changer * 3){
+    radius = 130;
     doDepthChange = false;
     doRadiusChange = true;
   }
   
   if(frameCount == rateFrames * changer * 4){
+    layerSpacing = 2;
     doRadiusChange = false;
     doLayerSpacingChange = true;
   }
@@ -293,25 +302,32 @@ void displayParameters(){
  }
  
  /**
- * Generates a random startColor and endColor, then populates an ArrayList with a gradient of colors from
+ * Gets the next start and end color, then populates an ArrayList with a gradient of colors from
  * "startColor" to "endColor" using recursive color interpolation. The resulting colors are stored
  * in "colors", with the startColor at the beginning and the endColor at the end.
  *
- * @param numColors   The number of colors in the gradient, excluding 
- *                    startColor and endColor.
- * @param colors      The ArrayList to store the generated colors.
- * @param startColor  The initial color of the gradient.
- * @param endColor    The final color of the gradient.
+ * @param numColors         The number of colors in the gradient, excluding 
+ *                          startColor and endColor.
+ * @param colors            The ArrayList to store the generated colors.
+ * @param predefinedColors  The initial color of the gradient.
  */
  void colorArray(int numColors, 
  ArrayList<Integer> colors, 
- color[] predefinedColors){
-  // generates a random startColor and endColor
-  startColor = predefinedColors[colorArrayIndex];
-  // generates a gradient of colors from "startColor" to 
-  // "endColor" to the array passed in, in-place
+ color[][] predefinedColors){
+  
+  // wrap back to the first index if at the end 
+  if(colorArrayIndex == predefinedColors.length){
+    colorArrayIndex = 0;
+  }
+  
+  // grabs next startColor and endColor
+  startColor = predefinedColors[colorArrayIndex][0];
+  endColor = predefinedColors[colorArrayIndex][1];
   colors.clear();
   populateColors(numColors, colors, startColor, endColor);
+  
+  // increment index so that next colors will show up on next cycle
+  colorArrayIndex++;
  }
 
 /**
