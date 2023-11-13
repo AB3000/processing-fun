@@ -1,29 +1,23 @@
 ArrayList<Integer> colors = new ArrayList<>();
 
-//DEBUGGING: UNCOMMENT TO CHECK IF ALL COLORS USED
-//ArrayList<Boolean> colorsUsed = new ArrayList<>();
-//int debugIter = 0; 
-
 // number*4 of outer circles to draw
 // excluding the first and last one
 // the amount of hands displayed will be 4x this number
-int circleAmount = 3;
+int circleAmount = 1;
 // demonstrate number of circles change in real time
 //radius boundaries to display, min and max
 // along with rate of change 
 int minCircleAmount = 1;
 int maxCircleAmount = 6;
 int circleChange = 1;
-
-//WARNING: Do not set true if "doHideChange" is true
-// could cause a race condition
 boolean doCircleChange = false;
 
-
-int circleHideAmount = 0;
+// after when to start drawing circles
+// 0 means no circles are hidden
+int circleHideAmount = -1;
 
 // number of inner circle layers to draw
-int innerDepth = 3;
+int innerDepth = 1;
 // demonstrate number of inner circles change in real time
 //radius boundaries to display, min and max
 // along with rate of change 
@@ -32,27 +26,13 @@ int maxDepth = 5;
 int depthChange = 1;
 boolean doDepthChange = false;
 
-// center of the canvas
-float centerX;
-float centerY;
-
-// Values on y-axis where small color palette lines are drawn 
-float topY; 
-float bottomY; 
-
 // amount that fractal rotates from the center per frame
 float moveAmount = 0;
 // little delta that speeds up the movement along the arc
 // make value > 0 if you don't want a constant pace 
 // fractal will move really quickly after a while if this number is big
-float moveChange = 0.005;
-
-// start and end colors of fractal gradient
-color startColor;
-color endColor;
-
-float fractalAngle = PI/2;
-float initialAngle = fractalAngle;
+// e.g.: try using 0.0005
+float moveChange = 0;
 
 // radius of outermost circle in fractal
 float radius = 130;
@@ -64,7 +44,6 @@ float maxRadius = radius;
 float radiusChange = 0.5;
 boolean doRadiusChange = false;
 
-
 // determines distance between outer and inner circles
 // larger = more spaced out
 float layerSpacing = 2;
@@ -72,15 +51,40 @@ float layerSpacing = 2;
 //boundaries of the layer spacing, min and max
 // along with rate of change 
 float maxLayerSpacing = 5;
-float minLayerSpacing = 0.5;
+float minLayerSpacing = 0.9;
 float layerSpacingChange = 0.01;
 boolean doLayerSpacingChange = false;
 
+// center of the canvas
+float centerX;
+float centerY;
+
+// Values on y-axis where small color palette lines are drawn 
+float topY; 
+float bottomY; 
+
+// start and end colors of fractal gradient
+color startColor;
+color endColor;
+
+// start angle of the fractal
+float fractalAngle = PI/2;
+float initialAngle = fractalAngle;
+
+//frame rate of redrawing
+int rateFrames = 60;
+
+//demonstrate how parameters affect fractal view
+boolean doDemo = true;
+//how fast each parameter is shown
+int changer = 7;
 
 void setup() {
   size(450, 800);
   background(0);
   noStroke();
+  
+  frameRate(rateFrames);
 
   // center position of the screen
   centerX = width/2;
@@ -92,65 +96,48 @@ void setup() {
   // set coordinates and move amount for color palette lines
   topY = centerY - height/4 - radius/2;
   bottomY = centerY + height/4 + radius/2;
-  
-  // //draw preset "sunset" colored fractal
+
+}
+
+void draw() {     
+
+    doDemo();
+    drawCircleFractal();
+    
+  // draw preset "sunset" colored fractal
   //drawCircles(6, 200, 100);
 }
 
-void draw() { 
+void doDemo(){
+  if(frameCount == rateFrames){
+    doCircleChange = true;
+  }
   
-    // clear the background on each frame
-    background(0);
-    displayParameters();
-    
-    //drawCircles(6, 200, 100);
-
-    // draw the color palette lines on each frame 
-    // so they won't be lost / cleared
-    drawColorPalette(colors, topY, bottomY);
+  if(frameCount == rateFrames * changer * 2){
+    doCircleChange = false;
+    doDepthChange = true;
+  }
   
-    // always draw fractal at center of screen
-    translate(centerX, centerY);
-    
-    // left fractal
-    drawFractal(circleAmount, fractalAngle, radius, 0, 0, innerDepth); 
-    // right fractal
-    drawFractal(circleAmount, fractalAngle, -radius, 0, 0, innerDepth);
-    
-    // rotate fractal (in radians) by a small amount each frame
-    fractalAngle += moveAmount;
-        
-    // check if the fractal has traveled half a circle
-    if((abs(fractalAngle - initialAngle) >= 3*PI/2 && moveAmount > 0)
-    || (fractalAngle - initialAngle <= -PI/2 && moveAmount < 0)){
-            
-      if(doCircleChange){
-        circleAmount += circleChange;
-      } 
-     
-      if(doDepthChange){
-        innerDepth += depthChange;
-      }
-      
-      // Regenerate new colors 
-      colorArray(circleAmount, colors, startColor, endColor);
-      // start moving fractal in the opposite direction
-      moveAmount = -moveAmount;
-     
-     
-      // DEBUGGING
-      //debugIter++;
-    }
-    
-    if(doRadiusChange){
-      radius += radiusChange;
-    } 
-    
-    if(doLayerSpacingChange){
-      layerSpacing += layerSpacingChange;
-    } 
-    
-    handleParameterChanges();
+  if(frameCount == rateFrames * changer * 3){
+    doDepthChange = false;
+    doRadiusChange = true;
+  }
+  
+  if(frameCount == rateFrames * changer * 4){
+    doRadiusChange = false;
+    doLayerSpacingChange = true;
+  }
+  
+  if(frameCount == rateFrames * changer * 5){
+    doLayerSpacingChange = false;
+    moveAmount = 0.01;
+  }
+  
+  if(frameCount == rateFrames * changer * 6){
+    moveAmount = 0;
+    frameCount = 0;
+  }
+  
 }
 
 
@@ -167,7 +154,6 @@ void handleParameterChanges(){
 
   // number of circles in outer later change
   if (doCircleChange && (circleAmount >= maxCircleAmount || circleAmount <= minCircleAmount)) {
-    println("THE CIRCLE AMOUNT IS ", circleAmount);
       // bind the parameter so its within the specified range
      if (circleAmount >= maxCircleAmount){
        circleAmount = maxCircleAmount;
@@ -226,7 +212,8 @@ void displayParameters(){
   
   textAlign(LEFT);
   
-  text("Angle: " + nf(fractalAngle, 0, 4), centerX - width/2.5, topY - height/10); 
+  fill(abs(moveAmount) > 0 ? changedParameter: regular);
+  text("Angle(rad): " + nf(fractalAngle, 0, 4), centerX - width/2.5, topY - height/10); 
   
   fill(doCircleChange ? changedParameter : regular);
   text("Total Circles per Layer: " + circleAmount*4, centerX - width/2.5, 1.5*(topY - height/10)); 
@@ -235,7 +222,7 @@ void displayParameters(){
   text("Inner Depth: " + innerDepth, centerX - width/2.5, 2*(topY - height/10)); 
   
   textAlign(RIGHT);
-  //change if you don't want move to be colored as if it were a changed parameter
+  
   fill(abs(moveAmount) > 0 ? changedParameter: regular);
   text("Move Amount: ", centerX + width/2.5 - width/10, topY - height/10); 
   text(moveAmount, centerX + width/2.5, topY - height/10); 
@@ -248,7 +235,6 @@ void displayParameters(){
   fill(doLayerSpacingChange ? changedParameter : regular);
   text("Layer Spacing: ", centerX + width/2.5 - width/10, 2*(topY - height/10));
   text(layerSpacing, centerX + width/2.5, 2*(topY - height/10)); 
-  
   
 }
 
@@ -299,16 +285,6 @@ void displayParameters(){
   // "endColor" to the array passed in, in-place
   colors.clear();
   populateColors(numColors, colors, startColor, endColor);
-  
-  //DEBUGGING
-  //if(debugIter == 0){
-  //  colorsUsed = new ArrayList<Boolean>();
-  //  for(int i = 0; i < colors.size(); i++) {
-  //    colorsUsed.add(false);
-  //  }
-  //}
-  //println(colorsUsed);
-  
  }
 
 /**
@@ -348,73 +324,4 @@ void displayParameters(){
    populateColors(numColors - 2, colors, startColor, generatedLerpColor);
    // generate the half-way color of the second half 
    populateColors(numColors - 2, colors, generatedLerpColor, endColor);
-}
-
-/**
- * Recursively draws concentric circles at different radii
- * based on the following parameters.
- *
- * @param depth          The recursion depth, determining the number of 
- *                       concentric circles to draw.
- * @param angle          The angle at which the circles are drawn.
- * @param radius         The initial radius of the outermost circles.
- * @param negativeAngle  Indicates whether the circles are drawn in the 
- *                       negative angle direction.
- */
-void drawInnerCircles(int depth, float angle, float radius, boolean negativeAngle, int colorIndex){
-  
-    // base case, inner most circle reached
-    if(depth == 0){
-      return;
-    }
-
-  
-    //println("COLOR SIZE IS ", colors.size());
-    // draws inner circles recursively on either side depending on the value
-    // of negativeAngle
-    if(negativeAngle){
-      //DEBUGGING
-      //colorsUsed.set(colorIndex, true);
-      //println("RETRIEVED NEGATIVE COLOR, INDEX IS ", colorIndex);
-      fill(colors.get(colorIndex), 120);
-      circle((radius+depth) * cos(-angle), (radius-depth) * sin(-angle), radius);
-    } else{
-      //DEBUGGING
-      //colorsUsed.set(colors.size() - 1 - colorIndex, true); 
-      //println("RETRIEVED POSITIVE COLOR, INDEX IS ", colors.size() - 1 - colorIndex);
-      fill(colors.get(colors.size() - 1 - colorIndex), 120);   
-      circle((radius-depth) * cos(angle), (radius+depth) * sin(angle), radius);
-    }
-  
-  drawInnerCircles(depth - 1, angle, radius/layerSpacing, negativeAngle, colorIndex);
-}
-
-/**
- * Recursively draws a fractal pattern composed of concentric circles at different radii, with each layer
- * having a distinct color. The depth of recursion determines the number of outer-circles in the fractal.
- *
- * @param depth       The recursion depth, determining the number of concentric circle layers in the fractal.
- * @param angle       The angle at which the circles are drawn.
- * @param radius      The initial radius of the outermost circle in the current layer.
- * @param colorIndex  The index of the color in the gradient used for the current layer.
- * @param reached     The number of times the recursion has reached this point.
- */
-void drawFractal(int depth, float angle, float radius, int colorIndex, int reached, int innerDepth){
-  
-  // base case, circle at last angle drawn
-  if(depth == 0){
-    return;
-  }
-  
-  // prevents the extra circles from being drawn
-  if (reached >= circleHideAmount){
-    // draw all the inner circles for both "halfway" points 
-    // drawn at the current interation
-    drawInnerCircles(innerDepth, angle, radius, true, colorIndex);
-    drawInnerCircles(innerDepth, angle, radius, false, colorIndex);
-  }
-  
-  // draw the next outer circle 
-  drawFractal(depth-1, angle/2, radius, colorIndex + 1, reached+1, innerDepth);
-  
 }
