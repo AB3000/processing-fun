@@ -27,7 +27,7 @@ int depthChange = 1;
 boolean doDepthChange = false;
 
 // amount that fractal rotates from the center per frame
-float moveAmount = 0.01;
+float moveAmount = 0;
 // little delta that speeds up the movement along the arc
 // make value > 0 if you don't want a constant pace 
 // fractal will move really quickly after a while if this number is big
@@ -68,7 +68,7 @@ color startColor;
 color endColor;
 // if true, generate random start and end colors
 // if false, choose colors from preset array
-boolean useRandomColors = false;
+boolean useRandomColors = true;
 // current index of the predefined color array, if passed in
 int colorArrayIndex = 0;
 
@@ -79,13 +79,14 @@ float initialAngle = fractalAngle;
 //frame rate of redrawing
 int rateFrames = 60;
 
-//demonstrate how parameters affect fractal view
-boolean doDemo = true;
-//how fast each parameter is shown
+// used for frameRate change in doDemo() (the demo)
 int changer = 7;
 
+// which case to run? 
+int whichFractal = 0;
+
 void setup() {
-  size(450, 800);
+  size(1000, 800);
   background(0);
   noStroke();
   
@@ -95,9 +96,9 @@ void setup() {
   centerX = width/2;
   centerY = height/2;
 
-  // Regenerate new colors
+  // Generate colors for first frame
   if(useRandomColors){
-    colorArray(circleAmount, colors, startColor, endColor);
+    colorArray(circleAmount, colors);
   } else{
     colorArray(circleAmount, colors, seasonColors);
   }
@@ -108,46 +109,77 @@ void setup() {
 
 }
 
-void draw() {     
-
-    //UNCOMMENT IF YOU WANT TO SEE DEMO OF PARAMETERS
-    //doDemo();
-    
-    drawCircleFractal(seasonColors, seasons);
-    
-  // draw preset "sunset" colored fractal
-  //drawCircles(6, 200, 100);
+void draw() {  
+  
+  switch(whichFractal) {
+    case 0:
+      // run the demo 
+      doDemo();
+      drawCircleFractal(null, null);
+      break;
+    case 1:
+      // draw fractal with preset colors
+      // useRandomColors is false? 
+      // enter array of [{start, end}...] colors you want
+      // along with a list of strings associated with each {start, end} object
+      drawCircleFractal(seasonColors, seasons);
+      break;
+    case 2: 
+      // useRandomColors is true? 
+      // DO null, null if useRandomColors is true 
+      // draw fractal with random colors
+      drawCircleFractal(null, null);
+      break;
+    case 3: 
+      // clear background on every frame to prevent continous draws on top of each other
+      background(0);
+      // draw preset "sunset" colored fractal
+      drawCircles(6, 200, 100);
+      break;
+  }
 }
 
 void doDemo(){
+  
+  // isolate "number of circles" change
   if(frameCount == rateFrames){
+    // set all variables to false except first parameter
+    doDepthChange = false;
+    doLayerSpacingChange = false;
+    // set moveAMount to 0 beecause this will be a parameter to change
+    moveAmount = 0;
     circleAmount = 1;
     doCircleChange = true;
   }
   
+  // isolate inner depth change  
   if(frameCount == rateFrames * changer * 2){
     innerDepth = 1;
     doCircleChange = false;
     doDepthChange = true;
   }
   
+  // isolate radius size change 
   if(frameCount == rateFrames * changer * 3){
     radius = 130;
     doDepthChange = false;
     doRadiusChange = true;
   }
   
+  // isolate layer spacing change 
   if(frameCount == rateFrames * changer * 4){
     layerSpacing = 2;
     doRadiusChange = false;
     doLayerSpacingChange = true;
   }
   
+  // isolate movement change
   if(frameCount == rateFrames * changer * 5){
     doLayerSpacingChange = false;
     moveAmount = 0.01;
   }
   
+  // start demo again
   if(frameCount == rateFrames * changer * 6){
     moveAmount = 0;
     frameCount = 0;
@@ -268,7 +300,7 @@ void displayParameters(String[] colorMeanings){
   
   textAlign(CENTER);
   //display what the color represents on screen 
-  if(!useRandomColors){
+  if(colorMeanings != null){
     textSize(25);
     fill(startColor);
     text(colorMeanings[colorArrayIndex - 1], centerX, startingPoint*baseHeightPlace);
@@ -318,14 +350,13 @@ void displayParameters(String[] colorMeanings){
  * @param numColors   The number of colors in the gradient, excluding 
  *                    startColor and endColor.
  * @param colors      The ArrayList to store the generated colors.
- * @param startColor  The initial color of the gradient.
- * @param endColor    The final color of the gradient.
  */
  void colorArray(int numColors, 
- ArrayList<Integer> colors, 
- color startColor,
- color endColor){
+ ArrayList<Integer> colors)
+ {
   // generates a random startColor and endColor
+  // represents the first and last color of the gradient
+  // declared globally at top
   startColor = color(random(100, 255), random(100, 255), random(100, 255));
   endColor = color(random(100, 255), random(100, 255), random(100, 255));
   // generates a gradient of colors from "startColor" to 

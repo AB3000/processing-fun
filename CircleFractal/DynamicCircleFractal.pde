@@ -1,3 +1,17 @@
+/**
+ * Draws a circle fractal with customizable parameters, including color, number of circles,
+ * inner circle depth, rotation, etc. based on specified conditions.
+ *
+ * @param colorList        A 2D array representing the color palette for the fractal.
+ *                         Each row corresponds to a color palette, and each column reprresents the 
+ *                         RGB values for the startColor and endColor, respectively. 
+ *                         Pass in 'null' to generate random colors.
+ * @param colorMeanings    An array of strings describing the meanings of each color in the palette.
+ * @see                    The parameters for doCircleChange, doDepthChange, and re-coloring occur when 
+ *                         the fractal has passed a "half cycle". 
+ * @see                    The parameters for moveAmount, radius, and layerSpacing happen on every frame.
+ * The @see parameters are located at the top of FractalRunner! 
+ */
 void drawCircleFractal(color[][] colorList, String[] colorMeanings){
   
     // clear the background on each frame
@@ -33,16 +47,19 @@ void drawCircleFractal(color[][] colorList, String[] colorMeanings){
       }
       
       if(colorList == null){
-          // Regenerate new random colors 
-          colorArray(circleAmount, colors, startColor, endColor);
+        // Regenerate new random colors 
+        colorArray(circleAmount, colors);
       } else{
         // generate gradient scale of colors from the two endpoints
         // in the predefined list passed in
-          colorArray(circleAmount, colors, colorList);
+        colorArray(circleAmount, colors, colorList);
       }
 
-      // start moving fractal in the opposite direction
-      moveAmount = -moveAmount;
+      if(moveAmount != 0){
+        // start moving fractal in the opposite direction
+        moveAmount = -moveAmount;
+      }
+   
     }
     
     if(doRadiusChange){
