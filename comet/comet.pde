@@ -1,16 +1,17 @@
-int cometX;
-int cometY;
 float tailLength = 100; // Length of the comet's tail
 PVector[] tail; // Array to store tail positions
 ArrayList<PVector[]> tails; // Array to store tail positions
 ArrayList<Float[]> directions; //array to store comet directions
-color[] colors; //array to store colors
+color[] colors; //array to store colors of the comets 
 
 
-
+//how fast the comet moves 
 int movAmount = 5;
+
+// number of comets on the screen
 int numComets = 10;
 
+// how big the comet size is 
 int cometSizeX = 40;
 int cometSizeY = 40;
 
@@ -36,7 +37,7 @@ void setup() {
 }
 
 void draw() {
-  background(0); // Set background color to black
+  background(0); // Set background color to black on each redraw 
   noStroke();
 
   // Update the first position of the tail with the current comet position 
@@ -49,6 +50,9 @@ void draw() {
 
 
 void drawComet(color c, int cometSizeX, int cometSizeY, int idx, PVector[] tail){
+  
+  // check if the comet is at a boundary and then flip it with a 
+  // bit of noise 
   if (tail[0].x > width-cometSizeX || tail[0].x < cometSizeX) {
     directions.get(idx)[0] *= -1.25;
   }
@@ -56,17 +60,19 @@ void drawComet(color c, int cometSizeX, int cometSizeY, int idx, PVector[] tail)
     directions.get(idx)[1] *= -1.25;
   }
   
+  //move the comet around 
   tail[0].x += movAmount * directions.get(idx)[0];
   tail[0].y += movAmount * directions.get(idx)[1];
   
   // Draw the comet's tail
   int alpha = 100;
   
-  // Shift the tail positions
+  // Shift the tail positions for each frame
   for (int i = tail.length - 1; i > 0; i--) {
     tail[i] = tail[i - 1];
   }
   
+  //draw out the comet shape 
   beginShape();
   for (int i = 0; i < tail.length; i++) {
     int sizeX = cometSizeX - i;
