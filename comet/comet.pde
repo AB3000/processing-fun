@@ -16,7 +16,8 @@ int cometSizeX = 40;
 int cometSizeY = 40;
 
 void setup() {
-  size(450, 800);
+  //450, 800 for insta size
+  size(1280, 720);
   
   tails = new ArrayList<>();
   directions = new ArrayList<>();
