@@ -70,7 +70,7 @@ color endColor;
 // if false, choose colors from preset array
 boolean useRandomColors = true;
 // current index of the predefined color array, if passed in
-int colorArrayIndex = 0;
+int colorArrayIndex = 1;
 
 // start angle of the fractal
 float fractalAngle = PI/2;
@@ -83,7 +83,7 @@ int rateFrames = 60;
 int changer = 7;
 
 // which case to run? 
-int whichFractal = 0;
+int whichFractal = 1;
 
 void setup() {
   size(1000, 800);
