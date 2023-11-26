@@ -1,7 +1,7 @@
 // alpha amount for each circle 
 int circleAlpha = 90;
 
-void drawCircles(int depth, int radius, int amount){
+void drawCircles(float depth, float radius, float amount){
   if(depth == 0){
     return;
   }
@@ -30,7 +30,6 @@ void drawCircles(int depth, int radius, int amount){
   fill(color(255, 0, 102), circleAlpha);
   circle(centerX - amount/1.5, centerY - amount/1.5, radius);
 
- 
   drawCircles(depth-1, radius/2, amount-10);
   
 }

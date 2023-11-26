@@ -3,14 +3,14 @@ ArrayList<Integer> colors = new ArrayList<>();
 // number*4 of outer circles to draw
 // excluding the first and last one
 // the amount of hands displayed will be 4x this number
-int circleAmount = 3;
+int circleAmount = 4;
 // demonstrate number of circles change in real time
 //radius boundaries to display, min and max
 // along with rate of change 
-int minCircleAmount = 1;
-int maxCircleAmount = 6;
+int minCircleAmount = 2;
+int maxCircleAmount = 5;
 int circleChange = 1;
-boolean doCircleChange = false;
+boolean doCircleChange = true;
 
 // after when to start drawing circles
 // 0 means no circles are hidden
@@ -24,10 +24,10 @@ int innerDepth = 10;
 int minDepth = 1;
 int maxDepth = 5;
 int depthChange = 1;
-boolean doDepthChange = false;
+boolean doDepthChange = true;
 
 // amount that fractal rotates from the center per frame
-float moveAmount = 0;
+float moveAmount = 0.02;
 // little delta that speeds up the movement along the arc
 // make value > 0 if you don't want a constant pace 
 // fractal will move really quickly after a while if this number is big
@@ -42,7 +42,7 @@ float radius = 125;
 float minRadius = 5;
 float maxRadius = radius;
 float radiusChange = 0.5;
-boolean doRadiusChange = false;
+boolean doRadiusChange = true;
 
 // determines distance between outer and inner circles
 // larger = more spaced out
@@ -53,7 +53,7 @@ float layerSpacing = 2;
 float maxLayerSpacing = 5;
 float minLayerSpacing = 0.9;
 float layerSpacingChange = 0.01;
-boolean doLayerSpacingChange = false;
+boolean doLayerSpacingChange = true;
 
 // center of the canvas
 float centerX;
@@ -68,9 +68,9 @@ color startColor;
 color endColor;
 // if true, generate random start and end colors
 // if false, choose colors from preset array
-boolean useRandomColors = true;
+boolean useRandomColors = false;
 // current index of the predefined color array, if passed in
-int colorArrayIndex = 1;
+int colorArrayIndex = 0;
 
 // start angle of the fractal
 float fractalAngle = PI/2;
@@ -85,8 +85,24 @@ int changer = 7;
 // which case to run? 
 int whichFractal = 1;
 
+// sunset fractal parameters 
+// how many circles are drawn inside
+float sunsetDepth = 6;
+
+//the radius of the outermost circle 
+float sunsetRadius = 200;
+float sunsetRadiusChange = 1;
+int sunsetMaxRadius = 200;
+
+// the space between inner layers
+float sunsetAmount = -100;
+float sunsetAmountChange = 0.75;
+int sunsetMaxAmount = 100;
+int sunsetMinAmount = -100;
+
+
 void setup() {
-  size(1000, 800);
+  size(450, 800);
   background(0);
   noStroke();
   
@@ -100,7 +116,7 @@ void setup() {
   if(useRandomColors){
     colorArray(circleAmount, colors);
   } else{
-    colorArray(circleAmount, colors, seasonColors);
+    colorArray(circleAmount, colors, sagittariusColors);
   }
   
   // set coordinates and move amount for color palette lines
@@ -122,7 +138,7 @@ void draw() {
       // useRandomColors is false? 
       // enter array of [{start, end}...] colors you want
       // along with a list of strings associated with each {start, end} object
-      drawCircleFractal(seasonColors, seasons);
+      drawCircleFractal(sagittariusColors, sagittarius);
       break;
     case 2: 
       // useRandomColors is true? 
@@ -134,7 +150,9 @@ void draw() {
       // clear background on every frame to prevent continous draws on top of each other
       background(0);
       // draw preset "sunset" colored fractal
-      drawCircles(6, 200, 100);
+      //depth, radius, amount 
+      sunsetChange();
+      drawCircles(sunsetDepth, sunsetRadius, sunsetAmount);
       break;
   }
 }
@@ -187,6 +205,22 @@ void doDemo(){
   
 }
 
+
+void sunsetChange(){
+  
+  sunsetRadius -= sunsetRadiusChange;
+  
+  if(sunsetRadius < -sunsetMaxRadius || sunsetRadius > sunsetMaxRadius){
+    sunsetRadiusChange = -sunsetRadiusChange;
+  }
+  
+  sunsetAmount -= sunsetAmountChange;
+  
+  if(sunsetAmount < sunsetMinAmount || sunsetAmount > sunsetMaxAmount){
+    sunsetAmountChange = -sunsetAmountChange;
+  }
+  
+}
 
 void handleParameterChanges(){
   
@@ -303,7 +337,8 @@ void displayParameters(String[] colorMeanings){
   if(colorMeanings != null){
     textSize(25);
     fill(startColor);
-    text(colorMeanings[colorArrayIndex - 1], centerX, startingPoint*baseHeightPlace);
+    //println("COLOR ARRAY INDEX IS ", colorArrayIndex);
+    text(colorMeanings[colorArrayIndex-1], centerX, startingPoint*baseHeightPlace);
     textSize(17);
   }
   String starting = "(" + int(red(startColor))
@@ -354,6 +389,7 @@ void displayParameters(String[] colorMeanings){
  void colorArray(int numColors, 
  ArrayList<Integer> colors)
  {
+   println("GENERATED A RANDOM START COLOR");
   // generates a random startColor and endColor
   // represents the first and last color of the gradient
   // declared globally at top
@@ -378,12 +414,11 @@ void displayParameters(String[] colorMeanings){
  void colorArray(int numColors, 
  ArrayList<Integer> colors, 
  color[][] predefinedColors){
-  
+    
   // wrap back to the first index if at the end 
-  if(colorArrayIndex == predefinedColors.length){
+  if(colorArrayIndex >= predefinedColors.length){
     colorArrayIndex = 0;
   }
-  
   // grabs next startColor and endColor
   startColor = predefinedColors[colorArrayIndex][0];
   endColor = predefinedColors[colorArrayIndex][1];
