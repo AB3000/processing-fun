@@ -29,6 +29,16 @@ color[][] sagittariusColors = {
   {color(253), color(0, 119, 190)}, //Honest -- 
   {color(218, 165, 32), color(176, 48, 96)}, //Generous -- 
   {color(188, 203, 173), color(89, 120, 135)}, //Intelligent -- 
-  {color(255, 100, 92), color(139, 133, 137)}, //Versatile -- 
-  
+  {color(255, 100, 92), color(139, 133, 137)}, //Versatile --  
 };
+
+void drawSagittariusSymbol(float x, float y) {
+  // Draw the arrow lines
+  stroke(endColor);
+  strokeWeight(3);
+  line(x - 15, y - 15, x + 15, y + 15);
+  line(x - 15, y - 15, x - 15, y + 5);
+  line(x - 15, y - 15, x + 5, y - 15);
+
+  noStroke();
+}

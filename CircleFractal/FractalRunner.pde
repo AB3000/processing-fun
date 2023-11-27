@@ -138,7 +138,12 @@ void draw() {
       // useRandomColors is false? 
       // enter array of [{start, end}...] colors you want
       // along with a list of strings associated with each {start, end} object
+      
       drawCircleFractal(sagittariusColors, sagittarius);
+      drawSagittariusSymbol(150, 180);
+      drawSagittariusSymbol(-150, 180);
+      drawSagittariusSymbol(150, -180);
+      drawSagittariusSymbol(-150, -180);
       break;
     case 2: 
       // useRandomColors is true? 
