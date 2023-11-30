@@ -6,7 +6,6 @@ float innerRadius,
 float outerRadius,
 int numArches,
 float offset){
-  
   rotate(offset);
   float angleBetween = 360f/numArches;
   float calculatedAngle = 90 - angleBetween/2f;
@@ -32,6 +31,8 @@ float offset){
   float y3 = (y4 + y1) / 2;
   
   for (int i = 0; i < numArches; i++){
+    fill(0,255,255);
+    //filter(BLUR, 1);
     bezier(x1, y1, x2, y2, x3, y3, x4, y4);
     bezier(-x1, y1, -x2, y2, -x3, y3, -x4, y4);
     //line(-x1, y1, -x2, y2);

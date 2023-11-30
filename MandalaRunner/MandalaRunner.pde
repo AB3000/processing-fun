@@ -29,9 +29,9 @@ void draw() {
     
     
     translate(centerX, centerY);
-    for(int i = 6; i > 3; i--){
+    for(int i = 8; i > 3; i--){
       //float cenX, float cenY, float innerRadius, float outerRadius, int numArches
-       drawTest(centerX, centerY, i*50, (i+2)*50, i, moveSpeed*i*10);
+       drawTest(centerX, centerY, i*30, i*40, i, moveSpeed*i*10);
       //strokeWeight(weight);
      
       //weight/=1.2;
