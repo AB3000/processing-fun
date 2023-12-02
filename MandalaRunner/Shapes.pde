@@ -1,34 +1,60 @@
-int numSpikes = 5; // Number of spikes
-float[] spikeX, spikeY; // Arrays to store spike coordinates
-
-void userInput() {
-  if (numSpikes < 3) {
-    println("Please enter a number greater than or equal to 3.");
-    userInput();
-  } else {
-    spikeX = new float[numSpikes];
-    spikeY = new float[numSpikes];
-    redraw();
+void drawArch( 
+float innerRadius, 
+float outerRadius,
+int numArches,
+float offset,
+color c,
+boolean addFill,
+boolean addLines,
+boolean drawCircle,
+float strokeSize){
+  rotate(offset);
+  float angleBetween = 360f/numArches;
+  float calculatedAngle = 90 - angleBetween/2f;
+  
+  stroke(c);
+  strokeWeight(strokeSize);
+  if(drawCircle){
+    noFill();
+    circle(0, 0, outerRadius*2);
+    circle(0, 0, outerRadius);
+    circle(0, 0, innerRadius*2);
+    circle(0, 0, innerRadius);
   }
-}
-
-void drawMandala() {
-  float angle = TWO_PI / numSpikes;
-  float radius = 3;
-
-  for (int i = 0; i < numSpikes; i++) {
-    spikeX[i] = radius * cos(angle * i);
-    spikeY[i] = radius * sin(angle * i);
+  
+  if(addFill){
+    fill(c);
+  } else{
+    noFill();
   }
+ 
+  
+  
+  float x1 = -cos(calculatedAngle*PI/180)*innerRadius;
+  float y1 = -sin(calculatedAngle*PI/180)*innerRadius;  
+  
+  float x4 = 0;
+  float y4 = -outerRadius;
+  
+  float x2 = x1;
+  float y2 = (y4 + y1) / 2;
+  
+  float x3 = x4;
+  float y3 = (y4 + y1) / 2;
+  
+  for (int i = 0; i < numArches; i++){
+    bezier(x1, y1, x2, y2, x3, y3, x4, y4);
+    bezier(-x1, y1, -x2, y2, -x3, y3, -x4, y4);
+    
+    if(addLines){
+      line(-x1, y1, -x2, y2);
+      line(-x1, y1, -x3, y3);
+      line(-x1, y1, -x4, y4);
+      line(x1, y1, x2, y2);
+      line(x1, y1, x3, y3);
+      line(x1, y1, x4, y4);
+    }
 
-  stroke(30);
-  strokeWeight(2);
-  fill(200);
-
-  beginShape();
-  for (int i = 0; i < numSpikes; i++) {
-    //vertex(spikeX[i], spikeY[i]);
-    rect(spikeX[i], spikeY[i], 20, 20);
+    rotate(angleBetween*PI/180);
   }
-  endShape(CLOSE);
 }
