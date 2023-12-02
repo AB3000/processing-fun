@@ -22,8 +22,8 @@ boolean doCircles;
 //color start = color(random(100, 255), random(100,255), random(100,255));
 //color end = color(random(100,255), random(100,255), random(100,255));
 
-color start = color(255, 15, 131);
-color end = color(255, 208, 0);
+color startColor = color(255, 15, 131);
+color endColor = color(255, 208, 0);
 
 
 //GUIs for controlling parameters
@@ -35,6 +35,8 @@ Slider innerRadiusSlider;
 Slider petalSlider;
 Slider distanceSlider;
 CheckBox checkbox;
+ColorPicker startColorPicker;
+ColorPicker endColorPicker;
 
 
 boolean flag = true;
@@ -86,9 +88,9 @@ void setup() {
   petalSlider = cp5.addSlider("Number of Petals")
             .setPosition(50, 150)
             .setSize(200, 20) // Width and height of the slider
-            .setRange(0, 50) // Minimum and maximum values
+            .setRange(2, 50) // Minimum and maximum values
             .setValue(numPetals) // Initial value
-            .setNumberOfTickMarks(51)
+            .setNumberOfTickMarks(49)
             .showTickMarks(false)
             .setSliderMode(Slider.FIX);  
 
@@ -115,15 +117,28 @@ void setup() {
             .setNumberOfTickMarks(51)
             .showTickMarks(false)
             .setSliderMode(Slider.FIX);
+            
+            
+  startColorPicker = cp5.addColorPicker("Start Color")
+                    .setPosition(50, 780)
+                    .setSize(100, 100) // Width and height of the color picker
+                    .setColorValue(startColor); // Initial color value (optional)
+                    
+                    
+  endColorPicker = cp5.addColorPicker("End Color")
+                    .setPosition(600, 780)
+                    .setSize(100, 100) // Width and height of the color picker
+                    .setColorValue(endColor); // Initial color value (optional)
 }
+
 
 void draw() {
 
     background(0);
     noFill();
-    //displaySliders();
-    //println("VALUE IS", outerRadius, "AND SLIDER VAL IS", outerRadiusSlider.sliderVal);
 
+    startColor = startColorPicker.getColorValue();
+    endColor = endColorPicker.getColorValue();
     
     translate(centerX, centerY);
     //drawArchMandala(6, 6, 100, 90, 5, 2, moveSpeed, false, false, true);

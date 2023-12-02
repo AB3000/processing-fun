@@ -14,7 +14,7 @@ boolean drawCircle){
   for(int i = numPetals; i > 2; i--){
       float amount = map(i, 0, totalArches - 1, 0.0, 1.0);
       drawArch(i*20, i*50, i, moveSpeed*i*0.5, 
-      lerpColor(start, end, amount),
+      lerpColor(startColor, endColor, amount),
       addFill, false, drawCircle, 2);
   }
   
@@ -22,7 +22,7 @@ boolean drawCircle){
     float amount = map(i + numPetals, 0, totalArches - 1, 0.0, 1.0);
     drawArch(
     baseOuterRadius, baseInnerRadius-i*10, 10, speed, 
-    lerpColor(start, end, amount), 
+    lerpColor(startColor, endColor, amount), 
     addLines, addFill, drawCircle, 1);
   }
   
@@ -31,7 +31,7 @@ boolean drawCircle){
     drawArch(
     (baseOuterRadius * distanceFactor)+(i*10), 
     baseInnerRadius, 
-    10, speed, lerpColor(start, end, amount), 
+    10, speed, lerpColor(startColor, endColor, amount), 
     addFill, addLines, drawCircle, 1);
   }
   
