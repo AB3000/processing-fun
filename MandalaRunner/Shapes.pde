@@ -6,7 +6,8 @@ float offset,
 color c,
 boolean addFill,
 boolean addLines,
-boolean drawCircle,
+boolean drawInnerCircle,
+boolean drawOuterCircle,
 float strokeSize){
   rotate(offset);
   float angleBetween = 360f/numArches;
@@ -14,12 +15,17 @@ float strokeSize){
   
   stroke(c);
   strokeWeight(strokeSize);
-  if(drawCircle){
+  
+  if(drawInnerCircle){
+    noFill();
+    circle(0, 0, innerRadius*2);
+    circle(0, 0, innerRadius);
+  }
+  
+  if(drawOuterCircle){
     noFill();
     circle(0, 0, outerRadius*2);
     circle(0, 0, outerRadius);
-    circle(0, 0, innerRadius*2);
-    circle(0, 0, innerRadius);
   }
   
   if(addFill){
@@ -33,20 +39,21 @@ float strokeSize){
   float x1 = -cos(calculatedAngle*PI/180)*innerRadius;
   float y1 = -sin(calculatedAngle*PI/180)*innerRadius;  
   
-  float x4 = 0;
+  float x4 =  0;
   float y4 = -outerRadius;
   
-  float x2 = x1;
-  float y2 = (y4 + y1) / 2;
+  float x2 = x1*oneXSlider.getValue();
+  float y2 = (y4 + y1)*oneYSlider.getValue()/ 2;
   
   float x3 = x4;
-  float y3 = (y4 + y1) / 2;
+  float y3 = (y4 + y1)*twoYSlider.getValue() / 2;
   
   for (int i = 0; i < numArches; i++){
     bezier(x1, y1, x2, y2, x3, y3, x4, y4);
     bezier(-x1, y1, -x2, y2, -x3, y3, -x4, y4);
     
     if(addLines){
+      noFill();
       line(-x1, y1, -x2, y2);
       line(-x1, y1, -x3, y3);
       line(-x1, y1, -x4, y4);

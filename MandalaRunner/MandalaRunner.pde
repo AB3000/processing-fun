@@ -17,7 +17,13 @@ float distance;
 boolean doFill;
 boolean addLines;
 boolean doLines;
-boolean doCircles;
+boolean doInnerCircles;
+boolean doOuterCircles;
+float controlPointOneX;
+float controlPointOneY;
+float controlPointTwoX;
+float controlPointTwoY;
+
 
 //color start = color(random(100, 255), random(100,255), random(100,255));
 //color end = color(random(100,255), random(100,255), random(100,255));
@@ -37,6 +43,12 @@ Slider distanceSlider;
 CheckBox checkbox;
 ColorPicker startColorPicker;
 ColorPicker endColorPicker;
+Slider oneXSlider;
+Slider oneYSlider;
+Slider twoXSlider;
+Slider twoYSlider;
+
+int sliderSize = 200;
 
 
 boolean flag = true;
@@ -47,6 +59,12 @@ void setup() {
   background(0);
   centerX = width / 2;
   centerY = height / 2;
+  
+  float leftAlign = centerX - width/2.15;
+  float rightAlign = centerX + width/2.25 - sliderSize;
+  
+  float topAlign = centerY - height/2.25;
+  float bottomAlign = centerY + height/2.25;
  
   // set initial variable values
   outerArches = 5;
@@ -57,9 +75,15 @@ void setup() {
   distance = 1;
   doFill = false;
   doLines = false;
-  doCircles = false;
+  doInnerCircles = false;
+  doOuterCircles = false;
+  controlPointOneX = 1;
+  controlPointOneY = 1;
+  controlPointTwoX = 1;
+  controlPointTwoY = 1;
   
   //set parameter GUIs
+ 
   
   //set checkboxes 
   cp5 = new ControlP5(this);
@@ -69,62 +93,90 @@ void setup() {
                  .setSize(20, 20)
                  .addItem("Add Fill?", 0)
                  .addItem("Add Lines?", 0)
-                 .addItem("Draw Circles?", 0)
+                 .addItem("Draw Inner Circles?", 0)
+                 .addItem("Draw Outer Circles?", 0)
                  .setSpacingRow(30);
 
   //set sliders
-  outerRadiusSlider = cp5.addSlider("Outer Radius")
-            .setPosition(50, 50)
-            .setSize(200, 20) // Width and height of the slider
-            .setRange(-360, 360) // Minimum and maximum values
-            .setValue(outerRadius); // Initial value 
   
-  innerRadiusSlider = cp5.addSlider("Inner Radius")
-            .setPosition(50, 80)
-            .setSize(200, 20) // Width and height of the slider
-            .setRange(-360, 360) // Minimum and maximum values
-            .setValue(innerRadius); // Initial value
-
-  petalSlider = cp5.addSlider("Number of Petals")
-            .setPosition(50, 150)
-            .setSize(200, 20) // Width and height of the slider
-            .setRange(2, 50) // Minimum and maximum values
-            .setValue(numPetals) // Initial value
-            .setNumberOfTickMarks(49)
-            .showTickMarks(false)
-            .setSliderMode(Slider.FIX);  
-
-  distanceSlider = cp5.addSlider("Distance Factor")
-            .setPosition(50, 350)
-            .setSize(200, 20) // Width and height of the slider
-            .setRange(-4, 4) // Minimum and maximum values
-            .setValue(distance); // Initial value
-
-  outerArchSlider = cp5.addSlider("Number of Outer Arches")
-            .setPosition(50, 200)
-            .setSize(200, 20) // Width and height of the slider
+  outerArchSlider = cp5.addSlider("# Outer Arches")
+            .setPosition(leftAlign, topAlign)
+            .setSize(sliderSize, 20) // Width and height of the slider
             .setRange(0, 50) // Minimum and maximum values
             .setValue(outerArches) // Initial value
             .setNumberOfTickMarks(51)
             .showTickMarks(false)
             .setSliderMode(Slider.FIX);
 
-  innerArchSlider = cp5.addSlider("Number of Inner Arches")
-            .setPosition(50, 250)
+  innerArchSlider = cp5.addSlider("# Inner Arches")
+            .setPosition(leftAlign, topAlign + 30)
             .setSize(200, 20) // Width and height of the slider
             .setRange(0, 50) // Minimum and maximum values
             .setValue(innerArches) // Initial value
             .setNumberOfTickMarks(51)
             .showTickMarks(false)
             .setSliderMode(Slider.FIX);
+
+  petalSlider = cp5.addSlider("Number of Petals")
+            .setPosition(leftAlign, topAlign + 60)
+            .setSize(200, 20) // Width and height of the slider
+            .setRange(2, 50) // Minimum and maximum values
+            .setValue(numPetals) // Initial value
+            .setNumberOfTickMarks(49)
+            .showTickMarks(false)
+            .setSliderMode(Slider.FIX);  
             
+  outerRadiusSlider = cp5.addSlider("Outer Radius")
+            .setPosition(rightAlign - 30, topAlign)
+            .setSize(sliderSize, 20) // Width and height of the slider
+            .setRange(-360, 360) // Minimum and maximum values
+            .setValue(outerRadius); // Initial value 
+  
+  innerRadiusSlider = cp5.addSlider("Inner Radius")
+            .setPosition(rightAlign - 30, topAlign + 30)
+            .setSize(sliderSize, 20) // Width and height of the slider
+            .setRange(-360, 360) // Minimum and maximum values
+            .setValue(innerRadius); // Initial value
+
+  distanceSlider = cp5.addSlider("Distance Factor")
+            .setPosition(rightAlign - 30, topAlign + 60)
+            .setSize(sliderSize, 20) // Width and height of the slider
+            .setRange(-4, 4) // Minimum and maximum values
+            .setValue(distance); // Initial value
+
+
+
+  oneXSlider = cp5.addSlider("Control Point 1 X")
+            .setPosition(leftAlign, 730)
+            .setSize(sliderSize, 20) // Width and height of the slider
+            .setRange(-4, 4) // Minimum and maximum values
+            .setValue(controlPointOneX); // Initial value
+            
+  oneYSlider = cp5.addSlider("Control Point 1 Y")
+            .setPosition(leftAlign, 750)
+            .setSize(sliderSize, 20) // Width and height of the slider
+            .setRange(-4, 4) // Minimum and maximum values
+            .setValue(controlPointOneY); // Initial value
+
             
   startColorPicker = cp5.addColorPicker("Start Color")
-                    .setPosition(50, 780)
+                    .setPosition(leftAlign, 780)
                     .setSize(100, 100) // Width and height of the color picker
                     .setColorValue(startColor); // Initial color value (optional)
-                    
-                    
+            
+            
+  twoXSlider = cp5.addSlider("Control Point 2 X")
+            .setPosition(rightAlign - 50, 730)
+            .setSize(sliderSize, 20) // Width and height of the slider
+            .setRange(-4, 4) // Minimum and maximum values
+            .setValue(controlPointTwoX); // Initial value
+            
+  twoYSlider = cp5.addSlider("Control Point 2 Y")
+            .setPosition(rightAlign - 50, 750)
+            .setSize(sliderSize, 20) // Width and height of the slider
+            .setRange(-4, 4) // Minimum and maximum values
+            .setValue(controlPointTwoY); // Initial value
+            
   endColorPicker = cp5.addColorPicker("End Color")
                     .setPosition(600, 780)
                     .setSize(100, 100) // Width and height of the color picker
@@ -152,7 +204,8 @@ void draw() {
     moveSpeed, //speed (float)
     doFill, //addFill (boolean)
     doLines, //addLines (boolean)
-    doCircles   //drawCircle (boolean)
+    doInnerCircles,   //drawInnerCircle (boolean)
+    doOuterCircles   //drawOuterCircle (boolean)
     );
     moveSpeed+=0.001;
     
@@ -171,7 +224,7 @@ void controlEvent(ControlEvent event) {
     // Toggle booleans according to user input on checkboxes
     doFill = checkbox.getItem(0).getBooleanValue();
     doLines = checkbox.getItem(1).getBooleanValue();
-    doCircles = checkbox.getItem(2).getBooleanValue();
-    
+    doInnerCircles = checkbox.getItem(2).getBooleanValue();
+    doOuterCircles = checkbox.getItem(3).getBooleanValue();
   }
 }

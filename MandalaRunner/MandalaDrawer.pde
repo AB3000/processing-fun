@@ -7,7 +7,8 @@ float distanceFactor,
 float speed,
 boolean addFill,
 boolean addLines,
-boolean drawCircle){
+boolean drawInnerCircle,
+boolean drawOuterCircle){
    int totalArches = numOuterArches + numInnerArches + numPetals;
    
   //outer petal arches
@@ -15,7 +16,7 @@ boolean drawCircle){
       float amount = map(i, 0, totalArches - 1, 0.0, 1.0);
       drawArch(i*20, i*50, i, moveSpeed*i*0.5, 
       lerpColor(startColor, endColor, amount),
-      addFill, false, drawCircle, 2);
+      addFill, false, drawInnerCircle, drawOuterCircle, 2);
   }
   
   for(int i = 0; i < numOuterArches; i++){
@@ -23,7 +24,7 @@ boolean drawCircle){
     drawArch(
     baseOuterRadius, baseInnerRadius-i*10, 10, speed, 
     lerpColor(startColor, endColor, amount), 
-    addLines, addFill, drawCircle, 1);
+    addLines, addFill, drawInnerCircle, drawOuterCircle, 1);
   }
   
   for(int i = 0; i < numInnerArches; i++){
@@ -32,7 +33,7 @@ boolean drawCircle){
     (baseOuterRadius * distanceFactor)+(i*10), 
     baseInnerRadius, 
     10, speed, lerpColor(startColor, endColor, amount), 
-    addFill, addLines, drawCircle, 1);
+    addFill, addLines, drawInnerCircle, drawOuterCircle, 1);
   }
   
 }
