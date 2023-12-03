@@ -40,7 +40,8 @@ Slider outerRadiusSlider;
 Slider innerRadiusSlider;
 Slider petalSlider;
 Slider distanceSlider;
-CheckBox checkbox;
+CheckBox checkboxRight;
+CheckBox checkboxLeft;
 ColorPicker startColorPicker;
 ColorPicker endColorPicker;
 Slider oneXSlider;
@@ -88,15 +89,19 @@ void setup() {
   //set checkboxes 
   cp5 = new ControlP5(this);
   stroke(255);
-  checkbox = cp5.addCheckBox("Boolean Effects")
-                 .setPosition(750, 50)
+  checkboxLeft = cp5.addCheckBox("Boolean Effects")
+                 .setPosition(leftAlign, height/2 - 90)
                  .setSize(20, 20)
-                 .addItem("Add Fill?", 0)
-                 .addItem("Add Lines?", 0)
                  .addItem("Draw Inner Circles?", 0)
                  .addItem("Draw Outer Circles?", 0)
                  .setSpacingRow(30);
 
+  checkboxRight = cp5.addCheckBox("Boolean Effects 2")
+                 .setPosition(width - 120, height/2 - 90)
+                 .setSize(20, 20)
+                 .addItem("Add Fill?", 0)
+                 .addItem("Add Lines?", 0)
+                 .setSpacingRow(30);
   //set sliders
   
   outerArchSlider = cp5.addSlider("# Outer Arches")
@@ -218,13 +223,12 @@ void draw() {
 
 
 void controlEvent(ControlEvent event) {
-  // Check if the event is from the checkbox
-  if (event.isFrom(checkbox)) {
-    println("Checkbox state changed: " + checkbox.getState(0));
+  // Check if the event is from any checkboxes
+  if (event.isFrom(checkboxRight) || event.isFrom(checkboxLeft)) {
     // Toggle booleans according to user input on checkboxes
-    doFill = checkbox.getItem(0).getBooleanValue();
-    doLines = checkbox.getItem(1).getBooleanValue();
-    doInnerCircles = checkbox.getItem(2).getBooleanValue();
-    doOuterCircles = checkbox.getItem(3).getBooleanValue();
+    doFill = checkboxRight.getItem(0).getBooleanValue();
+    doLines = checkboxRight.getItem(1).getBooleanValue();
+    doInnerCircles = checkboxLeft.getItem(0).getBooleanValue();
+    doOuterCircles = checkboxLeft.getItem(1).getBooleanValue();
   }
 }

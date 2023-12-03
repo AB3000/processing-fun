@@ -33,9 +33,7 @@ float strokeSize){
   } else{
     noFill();
   }
- 
-  
-  
+
   float x1 = -cos(calculatedAngle*PI/180)*innerRadius;
   float y1 = -sin(calculatedAngle*PI/180)*innerRadius;  
   
