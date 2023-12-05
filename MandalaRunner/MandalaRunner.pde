@@ -50,11 +50,11 @@ int colorPickerSize = 100;
 
 ControlFont font;
 
-boolean flag = true;
-//float radius = 10;
+boolean isHardcoded;
 
 void setup() {
-  size(1280, 720);
+  size(1400, 900);
+  
   background(0);
   centerX = width / 2;
   centerY = height / 2;
@@ -81,6 +81,7 @@ void setup() {
   controlPointOneY = 1;
   controlPointTwoX = 1;
   controlPointTwoY = 1;
+  
   
   //set parameter GUIs
  
@@ -186,6 +187,8 @@ void setup() {
                     .setPosition(rightAlign - 50, bottomAlign - 30)
                     .setSize(colorPickerSize, colorPickerSize) // Width and height of the color picker
                     .setColorValue(endColor); // Initial color value (optional)
+
+  isHardcoded = false;
 }
 
 
@@ -193,32 +196,73 @@ void draw() {
 
     background(0);
     noFill();
-
-    startColor = startColorPicker.getColorValue();
-    endColor = endColorPicker.getColorValue();
-    
     translate(centerX, centerY);
+    
     //drawArchMandala(6, 6, 100, 90, 5, 2, moveSpeed, false, false, true);
-    drawArchMandala(
-    (int) outerArchSlider.getValue(),    //numOuterArches (int)
-    (int) innerArchSlider.getValue(),    //numInnerArches (int)
-    outerRadiusSlider.getValue(),  //baseOuterRadius (float)
-    innerRadiusSlider.getValue(),  //baseInnerRadius  (float)
-    (int) petalSlider.getValue(),    //numPetals (int)
-    distanceSlider.getValue(),    //distanceFactor (float) 
-    moveSpeed, //speed (float)
-    doFill, //addFill (boolean)
-    doLines, //addLines (boolean)
-    doInnerCircles,   //drawInnerCircle (boolean)
-    doOuterCircles   //drawOuterCircle (boolean)
+    if(isHardcoded){
+      drawHardcodedMandala();
+    } else{
+      drawControllableMandala();
+    }
+   
+    // Reset translation for GUI elements
+    resetMatrix();
+    
+}
+
+
+void drawHardcodedMandala(){
+  
+  controlPointOneX = 3.77;
+  controlPointOneY = 1.13;
+  controlPointTwoX = 1.57;
+  controlPointTwoY = 0.81;
+  
+  startColor = color(0, 114, 255, 42);
+  endColor = color(235, 189, 0, 43);
+  
+  
+   drawArchMandala(
+      9,    //numOuterArches (int)
+      10,    //numInnerArches (int)
+      191.94,  //baseOuterRadius (float)
+      314,  //baseInnerRadius  (float)
+      7,    //numPetals (int)
+      0.85,    //distanceFactor (float) 
+      moveSpeed, //speed (float)
+      true, //addFill (boolean)
+      true, //addLines (boolean)
+      true,   //drawInnerCircle (boolean)
+      true   //drawOuterCircle (boolean)
     );
     moveSpeed+=0.001;
     
+    cp5.setVisible(false);
+}
+
+
+void drawControllableMandala(){
+  
+    startColor = startColorPicker.getColorValue();
+    endColor = endColorPicker.getColorValue();
+   
+    drawArchMandala(
+      (int) outerArchSlider.getValue(),    //numOuterArches (int)
+      (int) innerArchSlider.getValue(),    //numInnerArches (int)
+      outerRadiusSlider.getValue(),  //baseOuterRadius (float)
+      innerRadiusSlider.getValue(),  //baseInnerRadius  (float)
+      (int) petalSlider.getValue(),    //numPetals (int)
+      distanceSlider.getValue(),    //distanceFactor (float) 
+      moveSpeed, //speed (float)
+      doFill, //addFill (boolean)
+      doLines, //addLines (boolean)
+      doInnerCircles,   //drawInnerCircle (boolean)
+      doOuterCircles   //drawOuterCircle (boolean)
+    );
+    moveSpeed+=0.001;
     
-    // Reset translation for GUI elements
-    resetMatrix();
-    cp5.draw();
-    
+    cp5.setVisible(true);
+  
 }
 
 
