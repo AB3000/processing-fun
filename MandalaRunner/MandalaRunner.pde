@@ -1,7 +1,7 @@
 import controlP5.*;
 import javax.swing.*; 
 
-int numArcs = 7; // Change this variable based on user input
+//int numArcs = 7; // Change this variable based on user input
 float centerX; //= width / 2;
 float centerY;
 float moveSpeed = 1;
@@ -24,11 +24,7 @@ float controlPointOneY;
 float controlPointTwoX;
 float controlPointTwoY;
 
-
-//color start = color(random(100, 255), random(100,255), random(100,255));
-//color end = color(random(100,255), random(100,255), random(100,255));
-
-color startColor = color(255, 15, 131);
+color startColor = color(0, 154, 255);
 color endColor = color(255, 208, 0);
 
 
@@ -50,22 +46,25 @@ Slider twoXSlider;
 Slider twoYSlider;
 
 int sliderSize = 200;
+int colorPickerSize = 100;
 
+ControlFont font;
 
 boolean flag = true;
 //float radius = 10;
 
 void setup() {
-  size(900, 900);
+  size(1280, 720);
   background(0);
   centerX = width / 2;
   centerY = height / 2;
   
+  font = new ControlFont(createFont("Times",12));
   float leftAlign = centerX - width/2.15;
-  float rightAlign = centerX + width/2.25 - sliderSize;
+  float rightAlign = centerX + width/2.35 - sliderSize;
   
   float topAlign = centerY - height/2.25;
-  float bottomAlign = centerY + height/2.25;
+  float bottomAlign = centerY + height/2.45;
  
   // set initial variable values
   outerArches = 5;
@@ -88,6 +87,7 @@ void setup() {
   
   //set checkboxes 
   cp5 = new ControlP5(this);
+  cp5.setFont(font);
   stroke(255);
   checkboxLeft = cp5.addCheckBox("Boolean Effects")
                  .setPosition(leftAlign, height/2 - 90)
@@ -97,11 +97,12 @@ void setup() {
                  .setSpacingRow(30);
 
   checkboxRight = cp5.addCheckBox("Boolean Effects 2")
-                 .setPosition(width - 120, height/2 - 90)
+                 .setPosition(width - 150, height/2 - 90)
                  .setSize(20, 20)
                  .addItem("Add Fill?", 0)
                  .addItem("Add Lines?", 0)
                  .setSpacingRow(30);
+
   //set sliders
   
   outerArchSlider = cp5.addSlider("# Outer Arches")
@@ -129,62 +130,61 @@ void setup() {
             .setValue(numPetals) // Initial value
             .setNumberOfTickMarks(49)
             .showTickMarks(false)
-            .setSliderMode(Slider.FIX);  
+            .setSliderMode(Slider.FIX);
             
   outerRadiusSlider = cp5.addSlider("Outer Radius")
-            .setPosition(rightAlign - 30, topAlign)
+            .setPosition(rightAlign - 50, topAlign)
             .setSize(sliderSize, 20) // Width and height of the slider
             .setRange(-360, 360) // Minimum and maximum values
             .setValue(outerRadius); // Initial value 
   
   innerRadiusSlider = cp5.addSlider("Inner Radius")
-            .setPosition(rightAlign - 30, topAlign + 30)
+            .setPosition(rightAlign - 50, topAlign + 30)
             .setSize(sliderSize, 20) // Width and height of the slider
             .setRange(-360, 360) // Minimum and maximum values
             .setValue(innerRadius); // Initial value
 
   distanceSlider = cp5.addSlider("Distance Factor")
-            .setPosition(rightAlign - 30, topAlign + 60)
+            .setPosition(rightAlign - 50, topAlign + 60)
             .setSize(sliderSize, 20) // Width and height of the slider
             .setRange(-4, 4) // Minimum and maximum values
             .setValue(distance); // Initial value
 
 
-
   oneXSlider = cp5.addSlider("Control Point 1 X")
-            .setPosition(leftAlign, 730)
+            .setPosition(leftAlign, bottomAlign - 90)
             .setSize(sliderSize, 20) // Width and height of the slider
             .setRange(-4, 4) // Minimum and maximum values
             .setValue(controlPointOneX); // Initial value
             
   oneYSlider = cp5.addSlider("Control Point 1 Y")
-            .setPosition(leftAlign, 750)
+            .setPosition(leftAlign, bottomAlign - 60)
             .setSize(sliderSize, 20) // Width and height of the slider
             .setRange(-4, 4) // Minimum and maximum values
             .setValue(controlPointOneY); // Initial value
 
             
   startColorPicker = cp5.addColorPicker("Start Color")
-                    .setPosition(leftAlign, 780)
-                    .setSize(100, 100) // Width and height of the color picker
+                    .setPosition(leftAlign, bottomAlign - 30)
+                    .setSize(colorPickerSize, colorPickerSize) // Width and height of the color picker
                     .setColorValue(startColor); // Initial color value (optional)
-            
+  
             
   twoXSlider = cp5.addSlider("Control Point 2 X")
-            .setPosition(rightAlign - 50, 730)
+            .setPosition(rightAlign - 50, bottomAlign - 90)
             .setSize(sliderSize, 20) // Width and height of the slider
             .setRange(-4, 4) // Minimum and maximum values
             .setValue(controlPointTwoX); // Initial value
             
   twoYSlider = cp5.addSlider("Control Point 2 Y")
-            .setPosition(rightAlign - 50, 750)
+            .setPosition(rightAlign - 50, bottomAlign - 60)
             .setSize(sliderSize, 20) // Width and height of the slider
             .setRange(-4, 4) // Minimum and maximum values
-            .setValue(controlPointTwoY); // Initial value
+            .setValue(controlPointTwoY); // Initial value  
             
   endColorPicker = cp5.addColorPicker("End Color")
-                    .setPosition(600, 780)
-                    .setSize(100, 100) // Width and height of the color picker
+                    .setPosition(rightAlign - 50, bottomAlign - 30)
+                    .setSize(colorPickerSize, colorPickerSize) // Width and height of the color picker
                     .setColorValue(endColor); // Initial color value (optional)
 }
 
