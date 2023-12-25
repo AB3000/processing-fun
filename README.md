@@ -11,5 +11,5 @@ P.s. No pressure of course, but if you could star this repository, that would be
 
 ## Mandala Examples
 
-# Christmas Fractal 
+### Christmas Fractal 
 ![Uploading Screen Shot 2023-12-06 at 2.11.49 PM.png…]()
