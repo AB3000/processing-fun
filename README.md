@@ -12,4 +12,4 @@ P.s. No pressure of course, but if you could star this repository, that would be
 ## Mandala Examples
 
 ### Christmas Fractal 
-![Uploading Screen Shot 2023-12-06 at 2.11.49 PM.png…]()
+<img width="1395" alt="Screen Shot 2023-12-06 at 2 11 49 PM" src="https://github.com/AB3000/processing-fun/assets/31480939/4502ccab-4493-4664-8ae7-286b1c2dc5bb">
