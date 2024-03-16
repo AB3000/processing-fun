@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>p5.js Sketch</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: flex-start; /* Align items to the start of the page */
+            align-items: start; /* Align items to the top */
+            height: 100vh;
+            margin: 0;
+            background-color: black; /* Assuming a dark theme */
+        }
+        #controlPanel {
+            padding: 20px;
+        }
+        #canvasContainer {
+            flex-grow: 1; /* Allows the canvas to take up the remaining width */
+            display: flex;
+            justify-content: center; /* Center canvas horizontally in its container */
+            align-items: center; /* Center canvas vertically in its container */
+        }
+    </style>
+</head>
+<body>
+    <div id="controlPanel">
+        <!-- Controls (slider and label) will be dynamically inserted here -->
+    </div>
+    <div id="canvasContainer"></div> <!-- Container for the canvas -->
+    <script src="https://cdn.jsdelivr.net/npm/p5@1.4.0/lib/p5.js"></script>
+    <script src="motion.js"></script>
+</body>
+</html>
