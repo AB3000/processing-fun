@@ -1,40 +1,74 @@
-let bigAngle = 0;
-let bigAngleSlider, midAngleSlider;
+// used to prevent performance degradation
+let MAX_POINTS = 2000;
+
+
+// line angle information
+let bigAngle, midAngle;
+let bigAngleSlider, midAngleSlider, lineSizeSlider;
+
+//changeable visual attributes
+let strokeSize;
+let lineColor;
+
+// layer for trail that moving arms make
 let lineSize = 0;
 let pg;
-let points = []; // Array to store points positions
+let points = [];
 
 
 function setup(){
+
+  // STARTING VALUES for angle 
   bigAngle = PI;
   midAngle = PI;
   lineSize = 75;
   createCanvas(350, 350).parent('canvasContainer');
   pg = createGraphics(350, 350).parent('canvasContainer');
 
-  // create sliders
-  bigAngleSlider = createSlider(0, 0.1, 0.01, 0.001);
-  midAngleSlider = createSlider(0, 1, 0.1, 0.1);
+  // create ANGLE sliders
 
-  // display big line slider
+  // min val, max val, starting val, increment val 
+  bigAngleSlider = createSlider(0, 0.1, 0, 0.001);
+  midAngleSlider = createSlider(0, 1, 0, 0.1);
+  lineSizeSlider = createSlider(10, 100, 75, 1);
+
+  // crate & display big line slider
   bigAngleValueDisplay = createDiv('Big Line Speed: ' + bigAngleSlider.value().toFixed(3));
   bigAngleValueDisplay.parent('controlPanel');
   bigAngleValueDisplay.style('color', 'white');
   bigAngleValueDisplay.style('margin', '10px');
-
   bigAngleSlider.parent('controlPanel');
   bigAngleSlider.style('margin', '0px');
 
-  // display mid line slider
+  // crate & display mid line slider
   midAngleValueDisplay = createDiv('Mid Line Speed: ' + midAngleSlider.value().toFixed(1));
   midAngleValueDisplay.parent('controlPanel');
   midAngleValueDisplay.style('color', 'white');
   midAngleValueDisplay.style('margin', '10px');
-
   midAngleSlider.parent('controlPanel');
   midAngleSlider.style('margin', '0px');
 
-  // reset the drawing 
+  lineSizeValueDisplay = createDiv('Line Size: ' + lineSizeSlider.value().toFixed(1));
+  lineSizeValueDisplay.parent('controlPanel');
+  lineSizeValueDisplay.style('color', 'white');
+  lineSizeValueDisplay.style('margin', '10px');
+  lineSizeSlider.parent('controlPanel');
+  lineSizeSlider.style('margin', '0px');
+
+
+  // Label for the color picker
+  let colorPickerLabel = createDiv('Choose Line Color:');
+  colorPickerLabel.parent('controlPanel');
+  colorPickerLabel.style('color', 'white');
+  
+
+  // Color picker setup
+  colorPicker = createColorPicker('#ff0000');
+  colorPicker.parent('controlPanel');
+  colorPicker.style('margin', '10px');
+
+
+  // button to reset drawing  
   let resetButton = createButton('Reset Canvas');
   resetButton.parent('controlPanel'); // Assuming you have a div with an ID of 'controlPanel'
   resetButton.style('display', 'block'); // Ensures the button appears on its own line
@@ -62,16 +96,35 @@ function drawMotion() {
   // draw big base line 
   strokeWeight(1);
   stroke(255);
+  lineSize = lineSizeSlider.value();
+
+  // draw center Circle 
+
+
   line(0, 0, lineSize*cos(bigAngle), lineSize*sin(bigAngle));
-  ellipse(lineSize*cos(bigAngle), lineSize*sin(bigAngle), 5, 5); 
   
   // draw mid-size line
   translate(lineSize*cos(bigAngle), lineSize*sin(bigAngle));
   line(0, 0, (lineSize/2)*cos(midAngle), (lineSize/2)*sin(midAngle));
+
+  // draw "point" circle at big line and midsizeLine
+  fill(0, 255, 0);
+  noStroke();
+  circle(0, 0, 5); //big line circle 
+  circle((lineSize/2)*cos(midAngle), (lineSize/2)*sin(midAngle), 3);
+
   
-  // push points / trail that are drawn into an array 
-  points.push({x: width/2 + lineSize*cos(bigAngle) + (lineSize/2)*cos(midAngle), 
-               y: height/2 + lineSize*sin(bigAngle) + (lineSize/2)*sin(midAngle)});
+    // Limit the number of points stored
+    if (points.length > MAX_POINTS) {
+        points.shift(); // Remove the oldest point if over the limit
+    }
+
+    points.push({
+        x: width / 2 + lineSize * cos(bigAngle) + (lineSize / 2) * cos(midAngle),
+        y: height / 2 + lineSize * sin(bigAngle) + (lineSize / 2) * sin(midAngle),
+        color: colorPicker.value() // Store the current color picker value with the point
+    });
+  
   
   
   // change angles so lines move along a "spiral-circular" path
@@ -89,53 +142,27 @@ function resetCanvas() {
 }
 
 function drawPersistentPoints() {
-    // Clear the pg buffer to start fresh each frame
     pg.clear();
-  
     pg.colorMode(RGB, 255);
-    
-    // Configure the glow effect for pg
-    pg.drawingContext.shadowBlur = 25; // Adjust the glow's blur radius
-    pg.drawingContext.shadowColor = color(0, 255, 255); // Set a bright color for the glow effect
-  
-    // Use a bright, fully opaque color for the stroke
-    pg.stroke(0, 255, 255);
-    pg.strokeWeight(2); // Set the stroke weight for better visibility
-  
-    pg.noFill();
-    pg.beginShape();
-  
-    for (let point of points) {
-      // Draw the line with vertices at the points' locations
-      pg.vertex(point.x, point.y);
+    pg.strokeWeight(2); // Adjust as needed for the thickness of the line
+
+    // Iterate over the points array to draw each segment with its stored color and glow
+    for (let i = 0; i < points.length - 1; i++) {
+        let start = points[i];
+        let end = points[i + 1];
+
+        // Parse the stored color string to a p5 Color
+        let segmentColor = start.color; // Assuming this is stored in a format that p5 can parse directly
+        pg.stroke(segmentColor);
+
+        // Apply glow effect based on the segment's color
+        // Adjusting shadowBlur for desired glow intensity
+        pg.drawingContext.shadowBlur = 20; // Example intensity
+        pg.drawingContext.shadowColor = segmentColor;
+
+        // Draw the segment from start to end
+        pg.line(start.x, start.y, end.x, end.y);
     }
-  
-    pg.endShape();
-  
-    // No need to reset shadowBlur since we're clearing each frame
-    // Draw the pg layer which includes the glowing line
+
     image(pg, 0, 0);
-  }
-  
-
-// function drawPersistentPoints() {
-//     pg.colorMode(HSB, 360, 100, 100, 100); // Set color mode for pg
-
-//     // Configure glow effect for pg
-//     pg.drawingContext.shadowBlur = 10; // Adjust the glow's blur radius
-//     pg.drawingContext.shadowColor = pg.color(207, 7, 99, 100); // Set glow color and opacity
-
-//     pg.noStroke(); // No stroke for the circles
-//     pg.fill(207, 7, 99, 100); // Set fill color; adjust as needed
-    
-//     for (let point of points) {
-//       // Draw a small circle for each point to get a glow effect
-//       pg.circle(point.x, point.y, 1); // Adjust size as needed
-//     }
-    
-//     // Reset shadowBlur for pg to avoid affecting subsequent drawings
-//     pg.drawingContext.shadowBlur = 0;
-  
-//     // Draw the entire pg layer which includes the glowing points
-//     image(pg, 0, 0);
-// }
+}
