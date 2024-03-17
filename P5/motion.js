@@ -1,12 +1,11 @@
 // used to prevent performance degradation
 let MAX_POINTS = 2000;
 
-
 // line angle information
 let bigAngle, midAngle;
 let bigAngleSlider, midAngleSlider, lineSizeSlider;
 
-//changeable visual attributes
+// changeable visual attributes
 let strokeSize;
 let lineColor;
 
@@ -25,11 +24,12 @@ function setup(){
   createCanvas(350, 350).parent('canvasContainer');
   pg = createGraphics(350, 350).parent('canvasContainer');
 
-  // create ANGLE sliders
 
+  // SETUP FOR ALL THE CONTROLLABLE PARAMETERS 
+  // create ANGLE sliders
   // min val, max val, starting val, increment val 
-  bigAngleSlider = createSlider(0, 0.1, 0, 0.001);
-  midAngleSlider = createSlider(0, 1, 0, 0.1);
+  bigAngleSlider = createSlider(0, 0.1, 0.037, 0.001);
+  midAngleSlider = createSlider(0, 1, 0.1, 0.1);
   lineSizeSlider = createSlider(10, 100, 75, 1);
 
   // crate & display big line slider
@@ -70,10 +70,10 @@ function setup(){
 
   // button to reset drawing  
   let resetButton = createButton('Reset Canvas');
-  resetButton.parent('controlPanel'); // Assuming you have a div with an ID of 'controlPanel'
-  resetButton.style('display', 'block'); // Ensures the button appears on its own line
-  resetButton.style('margin', '10px auto'); // Centers the button and adds margin
-  resetButton.mousePressed(resetCanvas); // Specifies what function to call
+  resetButton.parent('controlPanel'); 
+  resetButton.style('display', 'block'); 
+  resetButton.style('margin', '10px auto'); 
+  resetButton.mousePressed(resetCanvas);
   
 }
 
@@ -84,7 +84,9 @@ function draw() {
   midAngleValueDisplay.html('Mid Line Speed: ' + midAngleSlider.value().toFixed(1));
   
   // Draw the persistent points on the main canvas
-  drawPersistentPoints();
+  if(bigAngleSlider.value() != 0 || midAngleSlider.value() != 0){
+    drawPersistentPoints();
+  }
 
   // Translate and draw motion without affecting the points the line draws
   translate(width / 2, height / 2);
@@ -98,23 +100,27 @@ function drawMotion() {
   stroke(255);
   lineSize = lineSizeSlider.value();
 
-  // draw center Circle 
 
-
+  // draw big line
   line(0, 0, lineSize*cos(bigAngle), lineSize*sin(bigAngle));
-  
+
+  // draw center Circle 
+  fill(colorPicker.value());
+  circle(0, 0, 10);
+
   // draw mid-size line
   translate(lineSize*cos(bigAngle), lineSize*sin(bigAngle));
   line(0, 0, (lineSize/2)*cos(midAngle), (lineSize/2)*sin(midAngle));
 
-  // draw "point" circle at big line and midsizeLine
+  // draw "point" circle at big line and midSizeLine
   fill(0, 255, 0);
-  noStroke();
-  circle(0, 0, 5); //big line circle 
+  //big line circle 
+  circle(0, 0, 5); 
+  //mid line circle 
   circle((lineSize/2)*cos(midAngle), (lineSize/2)*sin(midAngle), 3);
 
-  
-    // Limit the number of points stored
+
+    // Limit the number of points stored to prevent performance degradation
     if (points.length > MAX_POINTS) {
         points.shift(); // Remove the oldest point if over the limit
     }
@@ -125,8 +131,6 @@ function drawMotion() {
         color: colorPicker.value() // Store the current color picker value with the point
     });
   
-  
-  
   // change angles so lines move along a "spiral-circular" path
   bigAngle+= bigAngleSlider.value();
   midAngle += midAngleSlider.value();
@@ -134,9 +138,10 @@ function drawMotion() {
 
 
 function resetCanvas() {
-    points = []; // Clears the array of points
-    pg.clear(); // Clears the pg buffer, removing all drawn points/lines
-    // If needed, reinitialize any variables that determine the drawing state
+    points = []; // Clear point array 
+    pg.clear(); // Clear buffer / remove  all drawn points/lines
+
+    // restart new drawing from original angle
     bigAngle = PI;
     midAngle = PI;
 }
@@ -144,7 +149,7 @@ function resetCanvas() {
 function drawPersistentPoints() {
     pg.clear();
     pg.colorMode(RGB, 255);
-    pg.strokeWeight(2); // Adjust as needed for the thickness of the line
+    pg.strokeWeight(2);
 
     // Iterate over the points array to draw each segment with its stored color and glow
     for (let i = 0; i < points.length - 1; i++) {
@@ -155,12 +160,11 @@ function drawPersistentPoints() {
         let segmentColor = start.color; // Assuming this is stored in a format that p5 can parse directly
         pg.stroke(segmentColor);
 
-        // Apply glow effect based on the segment's color
-        // Adjusting shadowBlur for desired glow intensity
-        pg.drawingContext.shadowBlur = 20; // Example intensity
+        // Apply glow effect based on the color of current segment 
+        pg.drawingContext.shadowBlur = 20; // glow appears decently 
         pg.drawingContext.shadowColor = segmentColor;
 
-        // Draw the segment from start to end
+        // Draw each segment 
         pg.line(start.x, start.y, end.x, end.y);
     }
 
