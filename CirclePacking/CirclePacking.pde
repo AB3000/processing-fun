@@ -45,11 +45,15 @@ void draw() {
       attempts = 0; // reset attempts for the new circle
     }
 
-    if (!doesCircleHaveACollision(newCircle)) {
+    if (!doesCircleHaveACollision(newCircle)) {  
       growCircle(newCircle, boundaryCircle);
       if (newCircle != null) { // if it's still not null, draw it
         fill(newCircle.col); // default fill for small circles
         circle(newCircle.x, newCircle.y, newCircle.radius * 2);
+        //ADDED
+        for(int i = 0; i < 3; i++){
+          circle(newCircle.x, newCircle.y, (newCircle.radius * 2) / ((i + 1)* 1.25));
+        }
       }
     } else {
       // finished growing the circle or failed to place it
@@ -99,6 +103,6 @@ class Circle {
     y = y_;
     radius = radius_;
     // random color from palette
-    col = palettes[paletteIndex][(int)(random(palettes[paletteIndex].length))];
+    col = palettes[0][(int)(random(palettes[paletteIndex].length))];
   }
 }
